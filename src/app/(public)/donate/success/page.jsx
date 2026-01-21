@@ -1,5 +1,6 @@
 "use client"
 
+import { Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -11,6 +12,14 @@ import Link from 'next/link'
  * Shown after successful donation
  */
 export default function DonationSuccessPage() {
+  return (
+    <Suspense fallback={<div className="max-w-2xl mx-auto text-center" />}> 
+      <DonationSuccessContent />
+    </Suspense>
+  )
+}
+
+function DonationSuccessContent() {
   const searchParams = useSearchParams()
   const donationId = searchParams.get('id')
 
