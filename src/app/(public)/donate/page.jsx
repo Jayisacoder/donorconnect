@@ -149,12 +149,12 @@ export default function DonatePage() {
   const selectedCampaign = campaigns.find(c => c.id === formData.campaignId)
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="space-y-8 max-w-4xl mx-auto">
       {/* Hero Section */}
-      <div className="text-center mb-12">
+      <div className="text-center">
         <Heart className="h-16 w-16 text-red-500 mx-auto mb-4" />
-        <h1 className="text-4xl font-bold mb-4">Make a Donation</h1>
-        <p className="text-xl text-gray-600">
+        <h1 className="text-4xl font-bold mb-4 text-white">Make a Donation</h1>
+        <p className="text-xl text-gray-300">
           Your generosity makes our mission possible
         </p>
       </div>
@@ -163,18 +163,15 @@ export default function DonatePage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Form - Left Side */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Campaign Selection */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Select Campaign (Optional)</CardTitle>
-                <CardDescription>Choose a specific campaign to support</CardDescription>
-              </CardHeader>
-              <CardContent>
+              {/* Campaign Selection */}
+              <div className="glass-card p-6 border border-purple-500/20">
+                <h2 className="text-xl font-bold text-white mb-2">Select Campaign (Optional)</h2>
+                <p className="text-sm text-gray-400 mb-4">Choose a specific campaign to support</p>
                 {loading ? (
-                  <p className="text-gray-500">Loading campaigns...</p>
+                  <p className="text-gray-400">Loading campaigns...</p>
                 ) : campaigns.length > 0 ? (
                   <div className="space-y-3">
-                    <label className="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                    <label className="flex items-center gap-3 p-4 border border-purple-500/30 rounded-lg cursor-pointer hover:bg-purple-500/10 transition-colors bg-slate-900/50">
                       <input
                         type="radio"
                         name="campaignId"
@@ -184,14 +181,14 @@ export default function DonatePage() {
                         className="w-4 h-4"
                       />
                       <div className="flex-1">
-                        <p className="font-semibold">General Fund</p>
-                        <p className="text-sm text-gray-600">Support where it's needed most</p>
+                        <p className="font-semibold text-white">General Fund</p>
+                        <p className="text-sm text-gray-400">Support where it's needed most</p>
                       </div>
                     </label>
                     {campaigns.map(campaign => (
                       <label 
                         key={campaign.id}
-                        className="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                        className="flex items-center gap-3 p-4 border border-purple-500/30 rounded-lg cursor-pointer hover:bg-purple-500/10 transition-colors bg-slate-900/50"
                       >
                         <input
                           type="radio"
@@ -202,11 +199,11 @@ export default function DonatePage() {
                           className="w-4 h-4"
                         />
                         <div className="flex-1">
-                          <p className="font-semibold">{campaign.name}</p>
-                          <p className="text-sm text-gray-600">{campaign.description}</p>
+                          <p className="font-semibold text-white">{campaign.name}</p>
+                          <p className="text-sm text-gray-400">{campaign.description}</p>
                           {campaign.goal && (
                             <div className="mt-2">
-                              <Badge variant="outline">
+                              <Badge variant="outline" className="bg-purple-500/20 border-purple-500/50 text-purple-300">
                                 ${campaign.raised?.toLocaleString() || 0} / ${campaign.goal.toLocaleString()} raised
                               </Badge>
                             </div>
@@ -216,254 +213,247 @@ export default function DonatePage() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-500">No active campaigns at the moment</p>
+                  <p className="text-gray-400">No active campaigns at the moment</p>
                 )}
-              </CardContent>
-            </Card>
+              </div>
 
-            {/* Donation Amount */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Donation Amount</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-4 gap-3">
-                  {[25, 50, 100, 250].map(amount => (
-                    <Button
-                      key={amount}
-                      type="button"
-                      variant={formData.amount === amount.toString() ? "default" : "outline"}
-                      onClick={() => setFormData(prev => ({ ...prev, amount: amount.toString() }))}
+              {/* Donation Amount */}
+              <div className="glass-card p-6 border border-purple-500/20">
+                <h2 className="text-xl font-bold text-white mb-4">Donation Amount</h2>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-4 gap-3">
+                    {[25, 50, 100, 250].map(amount => (
+                      <Button
+                        key={amount}
+                        type="button"
+                        variant={formData.amount === amount.toString() ? "default" : "outline"}
+                        onClick={() => setFormData(prev => ({ ...prev, amount: amount.toString() }))}
+                        className={formData.amount === amount.toString() ? "bg-gradient-to-r from-purple-600 to-purple-500" : "border-purple-500/30 text-white hover:bg-purple-500/20"}
+                      >
+                        ${amount}
+                      </Button>
+                    ))}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-white mb-2">Custom Amount</label>
+                    <Input
+                      type="number"
+                      name="amount"
+                      value={formData.amount}
+                      onChange={handleChange}
+                      placeholder="Enter amount"
+                      min="1"
+                      step="0.01"
+                      className={`bg-slate-900 border-purple-500/30 text-white placeholder:text-gray-500 ${errors.amount ? 'border-red-500' : ''}`}
+                    />
+                    {errors.amount && <p className="text-sm text-red-500 mt-1">{errors.amount}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-white mb-2">Frequency</label>
+                    <select
+                      name="donationType"
+                      value={formData.donationType}
+                      onChange={handleChange}
+                      className="w-full rounded border border-purple-500/30 bg-slate-900 text-white px-3 py-2"
                     >
-                      ${amount}
-                    </Button>
-                  ))}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Custom Amount</label>
-                  <Input
-                    type="number"
-                    name="amount"
-                    value={formData.amount}
-                    onChange={handleChange}
-                    placeholder="Enter amount"
-                    min="1"
-                    step="0.01"
-                    className={errors.amount ? 'border-red-500' : ''}
-                  />
-                  {errors.amount && <p className="text-sm text-red-500 mt-1">{errors.amount}</p>}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Frequency</label>
-                  <select
-                    name="donationType"
-                    value={formData.donationType}
-                    onChange={handleChange}
-                    className="w-full rounded border px-3 py-2"
-                  >
-                    <option value="ONE_TIME">One-time</option>
-                    <option value="RECURRING">Monthly recurring</option>
-                  </select>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Donor Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Your Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">First Name</label>
-                    <Input
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleChange}
-                      className={errors.firstName ? 'border-red-500' : ''}
-                    />
-                    {errors.firstName && <p className="text-sm text-red-500 mt-1">{errors.firstName}</p>}
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Last Name</label>
-                    <Input
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleChange}
-                      className={errors.lastName ? 'border-red-500' : ''}
-                    />
-                    {errors.lastName && <p className="text-sm text-red-500 mt-1">{errors.lastName}</p>}
+                      <option value="ONE_TIME">One-time</option>
+                      <option value="RECURRING">Monthly recurring</option>
+                    </select>
                   </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Email</label>
-                  <Input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className={errors.email ? 'border-red-500' : ''}
-                  />
-                  {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Phone (Optional)</label>
-                  <Input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                  />
-                </div>
-              </CardContent>
-            </Card>
+              </div>
 
-            {/* Payment Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+              {/* Donor Information */}
+              <div className="glass-card p-6 border border-purple-500/20">
+                <h2 className="text-xl font-bold text-white mb-4">Your Information</h2>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-white mb-2">First Name</label>
+                      <Input
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleChange}
+                        className={`bg-slate-900 border-purple-500/30 text-white placeholder:text-gray-500 ${errors.firstName ? 'border-red-500' : ''}`}
+                      />
+                      {errors.firstName && <p className="text-sm text-red-500 mt-1">{errors.firstName}</p>}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-white mb-2">Last Name</label>
+                      <Input
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        className={`bg-slate-900 border-purple-500/30 text-white placeholder:text-gray-500 ${errors.lastName ? 'border-red-500' : ''}`}
+                      />
+                      {errors.lastName && <p className="text-sm text-red-500 mt-1">{errors.lastName}</p>}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-white mb-2">Email</label>
+                    <Input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className={`bg-slate-900 border-purple-500/30 text-white placeholder:text-gray-500 ${errors.email ? 'border-red-500' : ''}`}
+                    />
+                    {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-white mb-2">Phone (Optional)</label>
+                    <Input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className="bg-slate-900 border-purple-500/30 text-white placeholder:text-gray-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Payment Information */}
+              <div className="glass-card p-6 border border-purple-500/20">
+                <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
                   <CreditCard className="h-5 w-5" />
                   Payment Information
-                </CardTitle>
-                <CardDescription className="flex items-center gap-1">
+                </h2>
+                <p className="text-sm text-gray-400 mb-4 flex items-center gap-1">
                   <Lock className="h-3 w-3" />
                   Secure payment simulation (demo only)
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Demo Notice */}
-                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-sm text-blue-800 font-medium">
-                    🧪 Demo Mode: Payment Simulation Only
-                  </p>
-                  <p className="text-xs text-blue-700 mt-1">
-                    This form simulates card processing for demonstration purposes. 
-                    No real charges will be made. Use any test card number like 4111 1111 1111 1111.
-                  </p>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium mb-2">Card Number</label>
-                  <Input
-                    type="text"
-                    value={formData.cardNumber}
-                    onChange={handleCardNumberChange}
-                    placeholder="4111 1111 1111 1111 (test card)"
-                    maxLength="19"
-                    className={errors.cardNumber ? 'border-red-500' : ''}
-                  />
-                  {errors.cardNumber && <p className="text-sm text-red-500 mt-1">{errors.cardNumber}</p>}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Cardholder Name</label>
-                  <Input
-                    name="cardName"
-                    value={formData.cardName}
-                    onChange={handleChange}
-                    placeholder="John Doe"
-                    className={errors.cardName ? 'border-red-500' : ''}
-                  />
-                  {errors.cardName && <p className="text-sm text-red-500 mt-1">{errors.cardName}</p>}
-                </div>
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Month</label>
-                    <select
-                      name="expiryMonth"
-                      value={formData.expiryMonth}
-                      onChange={handleChange}
-                      className={`w-full rounded border px-3 py-2 ${errors.expiry ? 'border-red-500' : ''}`}
-                    >
-                      <option value="">MM</option>
-                      {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
-                        <option key={m} value={m.toString().padStart(2, '0')}>
-                          {m.toString().padStart(2, '0')}
-                        </option>
-                      ))}
-                    </select>
+                </p>
+                <div className="space-y-4">
+                  {/* Demo Notice */}
+                  <div className="p-3 bg-blue-500/20 border border-blue-500/50 rounded-lg">
+                    <p className="text-sm text-blue-300 font-medium">
+                      🧪 Demo Mode: Payment Simulation Only
+                    </p>
+                    <p className="text-xs text-blue-400 mt-1">
+                      This form simulates card processing for demonstration purposes. 
+                      No real charges will be made. Use any test card number like 4111 1111 1111 1111.
+                    </p>
                   </div>
+                  
                   <div>
-                    <label className="block text-sm font-medium mb-2">Year</label>
-                    <select
-                      name="expiryYear"
-                      value={formData.expiryYear}
-                      onChange={handleChange}
-                      className={`w-full rounded border px-3 py-2 ${errors.expiry ? 'border-red-500' : ''}`}
-                    >
-                      <option value="">YYYY</option>
-                      {Array.from({ length: 10 }, (_, i) => 2025 + i).map(y => (
-                        <option key={y} value={y}>{y}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">CVV</label>
+                    <label className="block text-sm font-medium text-white mb-2">Card Number</label>
                     <Input
                       type="text"
-                      name="cvv"
-                      value={formData.cvv}
-                      onChange={(e) => {
-                        const value = e.target.value.replace(/\D/g, '').slice(0, 4)
-                        setFormData(prev => ({ ...prev, cvv: value }))
-                      }}
-                      placeholder="123"
-                      maxLength="4"
-                      className={errors.cvv ? 'border-red-500' : ''}
+                      value={formData.cardNumber}
+                      onChange={handleCardNumberChange}
+                      placeholder="4111 1111 1111 1111 (test card)"
+                      maxLength="19"
+                      className={`bg-slate-900 border-purple-500/30 text-white placeholder:text-gray-500 ${errors.cardNumber ? 'border-red-500' : ''}`}
                     />
+                    {errors.cardNumber && <p className="text-sm text-red-500 mt-1">{errors.cardNumber}</p>}
                   </div>
-                </div>
-                {errors.expiry && <p className="text-sm text-red-500">{errors.expiry}</p>}
-                {errors.cvv && <p className="text-sm text-red-500">{errors.cvv}</p>}
-              </CardContent>
-            </Card>
-
-            {errors.submit && (
-              <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
-                {errors.submit}
-              </div>
-            )}
-
-            <Button type="submit" size="lg" className="w-full" disabled={processing}>
-              {processing ? 'Processing...' : `Donate $${formData.amount || '0'}`}
-            </Button>
-          </div>
-
-          {/* Summary Sidebar - Right Side */}
-          <div className="lg:col-span-1">
-            <Card className="sticky top-6">
-              <CardHeader>
-                <CardTitle>Donation Summary</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {selectedCampaign && (
                   <div>
-                    <p className="text-sm text-gray-600">Campaign</p>
-                    <p className="font-semibold">{selectedCampaign.name}</p>
+                    <label className="block text-sm font-medium text-white mb-2">Cardholder Name</label>
+                    <Input
+                      name="cardName"
+                      value={formData.cardName}
+                      onChange={handleChange}
+                      placeholder="John Doe"
+                      className={`bg-slate-900 border-purple-500/30 text-white placeholder:text-gray-500 ${errors.cardName ? 'border-red-500' : ''}`}
+                    />
+                    {errors.cardName && <p className="text-sm text-red-500 mt-1">{errors.cardName}</p>}
                   </div>
-                )}
-                <div>
-                  <p className="text-sm text-gray-600">Amount</p>
-                  <p className="text-2xl font-bold">
-                    ${formData.amount ? parseFloat(formData.amount).toFixed(2) : '0.00'}
-                  </p>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-white mb-2">Month</label>
+                      <select
+                        name="expiryMonth"
+                        value={formData.expiryMonth}
+                        onChange={handleChange}
+                        className={`w-full rounded border border-purple-500/30 bg-slate-900 text-white px-3 py-2 ${errors.expiry ? 'border-red-500' : ''}`}
+                      >
+                        <option value="">MM</option>
+                        {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
+                          <option key={m} value={m.toString().padStart(2, '0')}>
+                            {m.toString().padStart(2, '0')}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-white mb-2">Year</label>
+                      <select
+                        name="expiryYear"
+                        value={formData.expiryYear}
+                        onChange={handleChange}
+                        className={`w-full rounded border border-purple-500/30 bg-slate-900 text-white px-3 py-2 ${errors.expiry ? 'border-red-500' : ''}`}
+                      >
+                        <option value="">YYYY</option>
+                        {Array.from({ length: 10 }, (_, i) => 2025 + i).map(y => (
+                          <option key={y} value={y}>{y}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-white mb-2">CVV</label>
+                      <Input
+                        type="text"
+                        name="cvv"
+                        value={formData.cvv}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, '').slice(0, 4)
+                          setFormData(prev => ({ ...prev, cvv: value }))
+                        }}
+                        placeholder="123"
+                        maxLength="4"
+                        className={`bg-slate-900 border-purple-500/30 text-white placeholder:text-gray-500 ${errors.cvv ? 'border-red-500' : ''}`}
+                      />
+                    </div>
+                  </div>
+                  {errors.expiry && <p className="text-sm text-red-500">{errors.expiry}</p>}
+                  {errors.cvv && <p className="text-sm text-red-500">{errors.cvv}</p>}
                 </div>
-                <div>
-                  <p className="text-sm text-gray-600">Frequency</p>
-                  <p className="font-semibold">
-                    {formData.donationType === 'ONE_TIME' ? 'One-time' : 'Monthly recurring'}
-                  </p>
+              </div>
+
+              {errors.submit && (
+                <div className="p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-300">
+                  {errors.submit}
                 </div>
-                <div className="pt-4 border-t">
-                  <p className="text-xs text-gray-500">
-                    Tax receipts will be sent to your email address.
-                  </p>
+              )}
+
+              <Button type="submit" size="lg" className="w-full bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white text-lg" disabled={processing}>
+                {processing ? 'Processing...' : `Donate $${formData.amount || '0'}`}
+              </Button>
+            </div>
+
+            {/* Summary Sidebar - Right Side */}
+            <div className="lg:col-span-1">
+              <div className="glass-card p-6 border border-purple-500/20 sticky top-6">
+                <h2 className="text-xl font-bold text-white mb-4">Donation Summary</h2>
+                <div className="space-y-4">
+                  {selectedCampaign && (
+                    <div>
+                      <p className="text-sm text-gray-400">Campaign</p>
+                      <p className="font-semibold text-white">{selectedCampaign.name}</p>
+                    </div>
+                  )}
+                  <div>
+                    <p className="text-sm text-gray-400">Amount</p>
+                    <p className="text-2xl font-bold text-white">
+                      ${formData.amount ? parseFloat(formData.amount).toFixed(2) : '0.00'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-400">Frequency</p>
+                    <p className="font-semibold text-white">
+                      {formData.donationType === 'ONE_TIME' ? 'One-time' : 'Monthly recurring'}
+                    </p>
+                  </div>
+                  <div className="pt-4 border-t border-purple-500/20">
+                    <p className="text-xs text-gray-400">
+                      Tax receipts will be sent to your email address.
+                    </p>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
-        </div>
-      </form>
-    </div>
-  )
-}
+        </form>
+      </div>
+    )
+  }
