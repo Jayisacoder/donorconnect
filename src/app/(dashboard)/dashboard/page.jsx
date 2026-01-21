@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Users, DollarSign, TrendingUp, AlertCircle, Plus, UserPlus, Calendar, Clock, Gift, Target } from 'lucide-react'
+import { Users, DollarSign, TrendingUp, AlertCircle, Plus, UserPlus, Calendar, Clock, Gift, Target, Heart, Shield, ChevronRight, CircleDot } from 'lucide-react'
 import { getSessionUser } from '@/lib/session'
 import { prisma } from '@/lib/db'
 import { redirect } from 'next/navigation'
@@ -79,21 +79,22 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-6 rounded-xl border border-primary/20">
+      {/* Page Header */}
+      <div className="page-header">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900">Dashboard</h1>
-            <p className="text-gray-600 mt-3 text-lg">Welcome back! Here's what's happening with your donors.</p>
+            <h1 className="text-4xl font-black text-white tracking-tight">Command Center</h1>
+            <p className="text-gray-400 mt-3 text-lg">Welcome back! Here's what's happening with your donors.</p>
           </div>
           <div className="flex gap-3">
             <Link href="/donors/new">
-              <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg">
+              <Button className="btn-gradient rounded-xl px-5 py-3">
                 <UserPlus className="h-4 w-4 mr-2" />
                 Add Donor
               </Button>
             </Link>
             <Link href="/donations/new">
-              <Button className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 shadow-lg">
+              <Button className="btn-gradient-green rounded-xl px-5 py-3">
                 <Plus className="h-4 w-4 mr-2" />
                 Log Donation
               </Button>
@@ -102,81 +103,81 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      {/* Metric Cards */}
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
         <Link href="/donors">
-          <Card className="hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer border-l-4 border-l-blue-500 bg-gradient-to-br from-blue-50/50 to-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-700">Total Donors</CardTitle>
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Users className="h-5 w-5 text-blue-600 transition-transform hover:scale-110" />
+          <div className="metric-card risk-low group cursor-pointer">
+            <div className="flex items-start justify-between mb-4">
+              <div className="p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/30">
+                <Users className="h-6 w-6 text-emerald-400" />
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-blue-700">{donors.length}</div>
-              <p className="text-xs text-gray-500 mt-1">
-                {activeDonors} active, {newDonors} new, {lapsedDonors} lapsed
-              </p>
-            </CardContent>
-          </Card>
+              <span className="text-sm font-semibold px-3 py-1 rounded-full bg-emerald-500/30 text-emerald-300">
+                +{recentNewDonors} new
+              </span>
+            </div>
+            <div className="text-4xl font-black text-white mb-1">{donors.length}</div>
+            <div className="text-gray-400 font-medium">Total Donors</div>
+            <div className="text-xs text-gray-500 mt-2">{activeDonors} active, {lapsedDonors} lapsed</div>
+          </div>
         </Link>
 
         <Link href="/donations">
-          <Card className="hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer border-l-4 border-l-green-500 bg-gradient-to-br from-green-50/50 to-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-700">Total Raised</CardTitle>
-              <div className="p-2 bg-green-100 rounded-lg">
-                <DollarSign className="h-5 w-5 text-green-600 transition-transform hover:scale-110" />
+          <div className="metric-card group cursor-pointer" style={{background: 'linear-gradient(135deg, hsl(145 60% 45% / 0.15) 0%, hsl(165 60% 40% / 0.1) 100%)'}}>
+            <div className="flex items-start justify-between mb-4">
+              <div className="p-3 rounded-xl bg-green-500/20 border border-green-500/30">
+                <DollarSign className="h-6 w-6 text-green-400" />
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-green-700">{formatCurrency(totalRaised)}</div>
-              <p className="text-xs text-gray-500 mt-1">{donations.length} donations</p>
-            </CardContent>
-          </Card>
+              <span className="text-sm font-semibold px-3 py-1 rounded-full bg-green-500/30 text-green-300">
+                {donations.length} gifts
+              </span>
+            </div>
+            <div className="text-4xl font-black text-white mb-1">{formatCurrency(totalRaised)}</div>
+            <div className="text-gray-400 font-medium">Total Raised</div>
+          </div>
         </Link>
 
         <Link href="/donations">
-          <Card className="hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer border-l-4 border-l-purple-500 bg-gradient-to-br from-purple-50/50 to-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-700">This Month</CardTitle>
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <TrendingUp className="h-5 w-5 text-purple-600 transition-transform hover:scale-110" />
+          <div className="metric-card group cursor-pointer" style={{background: 'linear-gradient(135deg, hsl(270 70% 55% / 0.15) 0%, hsl(330 70% 55% / 0.1) 100%)'}}>
+            <div className="flex items-start justify-between mb-4">
+              <div className="p-3 rounded-xl bg-purple-500/20 border border-purple-500/30">
+                <TrendingUp className="h-6 w-6 text-purple-400" />
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-purple-700">{formatCurrency(thisMonthRaised)}</div>
-              <p className="text-xs text-gray-500 mt-1">{thisMonthDonations.length} donations</p>
-            </CardContent>
-          </Card>
+              <span className="text-sm font-semibold px-3 py-1 rounded-full bg-purple-500/30 text-purple-300">
+                This month
+              </span>
+            </div>
+            <div className="text-4xl font-black text-white mb-1">{formatCurrency(thisMonthRaised)}</div>
+            <div className="text-gray-400 font-medium">{thisMonthDonations.length} Donations</div>
+          </div>
         </Link>
 
-        <Link href="/tasks">
-          <Card className="hover:shadow-xl hover:scale-105 transition-all duration-200 cursor-pointer border-l-4 border-l-orange-500 bg-gradient-to-br from-orange-50/50 to-white">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-700">Pending Tasks</CardTitle>
-              <div className="p-2 bg-orange-100 rounded-lg">
-                <AlertCircle className="h-5 w-5 text-orange-600 transition-transform hover:scale-110" />
+        <Link href="/donors?risk=HIGH">
+          <div className="metric-card risk-high group cursor-pointer">
+            <div className="flex items-start justify-between mb-4">
+              <div className="p-3 rounded-xl bg-red-500/20 border border-red-500/30">
+                <Shield className="h-6 w-6 text-red-400" />
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-orange-700">{pendingTasks}</div>
-              <p className="text-xs text-gray-500 mt-1">{highPriorityTasks} high priority</p>
-            </CardContent>
-          </Card>
+              <span className="text-sm font-semibold px-3 py-1 rounded-full bg-red-500/30 text-red-300">
+                Needs attention
+              </span>
+            </div>
+            <div className="text-4xl font-black text-white mb-1">{atRiskDonors}</div>
+            <div className="text-gray-400 font-medium">At Risk Donors</div>
+          </div>
         </Link>
       </div>
 
+      {/* Activity and Campaigns Row */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="hover:shadow-xl transition-all duration-200">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-primary" />
-              Your Upcoming Tasks
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
+        {/* Upcoming Tasks */}
+        <div className="glass-card p-6">
+          <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+            <Calendar className="h-5 w-5 text-purple-400" />
+            Upcoming Tasks
+          </h2>
+          <div className="space-y-3">
             {upcomingTasks.length === 0 ? (
-              <p className="text-sm text-gray-500">No upcoming tasks in the next 7 days.</p>
+              <p className="text-gray-500">No upcoming tasks in the next 7 days.</p>
             ) : (
               upcomingTasks.map((task) => {
                 const dueDate = new Date(task.dueDate)
@@ -185,163 +186,159 @@ export default async function DashboardPage() {
                 
                 return (
                   <Link key={task.id} href="/tasks">
-                    <div className="p-3 rounded-lg border hover:bg-muted/50 transition-all duration-200 cursor-pointer">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{task.title}</p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Clock className="h-3 w-3 text-gray-400" />
-                            <p className={`text-xs ${isOverdue ? 'text-red-600 font-medium' : 'text-gray-500'}`}>
-                              {isOverdue ? 'Overdue' : daysUntilDue === 0 ? 'Due today' : `${daysUntilDue} days`}
-                            </p>
-                          </div>
-                        </div>
-                        <Badge 
-                          variant="outline" 
-                          className={
-                            task.priority === 'URGENT' ? 'bg-red-100 text-red-700 border-red-300' :
-                            task.priority === 'HIGH' ? 'bg-orange-100 text-orange-700 border-orange-300' :
-                            'bg-blue-100 text-blue-700 border-blue-300'
-                          }
-                        >
-                          {task.priority}
-                        </Badge>
+                    <div className="activity-item">
+                      <Clock className={`h-4 w-4 flex-shrink-0 ${isOverdue ? 'text-red-400' : 'text-purple-400'}`} />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-white truncate">{task.title}</p>
+                        <p className={`text-xs ${isOverdue ? 'text-red-400' : 'text-gray-500'}`}>
+                          {isOverdue ? 'Overdue' : daysUntilDue === 0 ? 'Due today' : `${daysUntilDue} days`}
+                        </p>
                       </div>
+                      <span className={`text-xs px-2 py-1 rounded-full ${
+                        task.priority === 'URGENT' ? 'badge-danger' :
+                        task.priority === 'HIGH' ? 'badge-warning' :
+                        'bg-purple-500/20 text-purple-300'
+                      }`}>
+                        {task.priority}
+                      </span>
+                      <ChevronRight className="h-4 w-4 text-gray-600" />
                     </div>
                   </Link>
                 )
               })
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="hover:shadow-xl transition-all duration-200">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5 text-primary" />
-              Active Campaigns
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        {/* Active Campaigns */}
+        <div className="glass-card p-6">
+          <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+            <Target className="h-5 w-5 text-purple-400" />
+            Active Campaigns
+          </h2>
+          <div className="space-y-4">
             {campaigns.length === 0 ? (
-              <p className="text-sm text-gray-500">No active campaigns.</p>
+              <p className="text-gray-500">No active campaigns.</p>
             ) : (
               campaigns.slice(0, 3).map((campaign) => {
                 const progress = campaign.goalAmount > 0 ? (campaign.currentAmount / campaign.goalAmount) * 100 : 0
                 return (
                   <Link key={campaign.id} href="/campaigns">
-                    <div className="space-y-2 p-3 rounded-lg hover:bg-muted/50 transition-all duration-200 cursor-pointer">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="font-medium">{campaign.name}</span>
-                        <span className="font-bold text-green-600">{Math.round(progress)}%</span>
+                    <div className="p-4 rounded-xl bg-white/5 border border-white/10 hover:border-purple-500/30 transition-all group cursor-pointer">
+                      <div className="flex items-center justify-between text-sm mb-2">
+                        <span className="font-medium text-white">{campaign.name}</span>
+                        <span className="font-bold text-emerald-400">{Math.round(progress)}%</span>
                       </div>
-                      <Progress value={progress} className="h-2" />
-                      <div className="text-xs text-gray-500">
-                        {formatCurrency(campaign.currentAmount)} of {formatCurrency(campaign.goalAmount)} raised
+                      <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-500"
+                          style={{ width: `${Math.min(progress, 100)}%` }}
+                        />
+                      </div>
+                      <div className="text-xs text-gray-500 mt-2">
+                        {formatCurrency(campaign.currentAmount)} of {formatCurrency(campaign.goalAmount)}
                       </div>
                     </div>
                   </Link>
                 )
               })
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="hover:shadow-xl transition-all duration-200">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Gift className="h-5 w-5 text-primary" />
-              Recent Activity
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
+        {/* Recent Activity */}
+        <div className="glass-card p-6">
+          <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+            <Gift className="h-5 w-5 text-purple-400" />
+            Recent Activity
+          </h2>
+          <div className="space-y-3">
             {donations.length === 0 ? (
-              <p className="text-sm text-gray-500">No recent donations.</p>
+              <p className="text-gray-500">No recent donations.</p>
             ) : (
               donations.slice(0, 5).map((donation) => (
                 <Link key={donation.id} href={`/donors/${donation.donor?.id}`}>
-                  <div className="flex items-center justify-between border-b pb-3 last:border-b-0 last:pb-0 p-2 rounded hover:bg-muted/50 transition-all duration-200 cursor-pointer">
-                    <div>
-                      <p className="text-sm font-medium">
+                  <div className="activity-item">
+                    <CircleDot className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-white">
                         {donation.donor?.firstName} {donation.donor?.lastName}
                       </p>
                       <p className="text-xs text-gray-500">{new Date(donation.date).toLocaleDateString()}</p>
                     </div>
-                    <div className="text-sm font-bold text-green-600">{formatCurrency(donation.amount)}</div>
+                    <span className="text-sm font-bold text-emerald-400">{formatCurrency(donation.amount)}</span>
+                    <ChevronRight className="h-4 w-4 text-gray-600" />
                   </div>
                 </Link>
               ))
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
+      {/* Insights Row */}
       <div className="grid gap-6 md:grid-cols-2">
-        <Card className="hover:shadow-xl transition-all duration-200 border-l-4 border-l-blue-500">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-blue-600" />
-              Donor Insights
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+        <div className="glass-card p-6">
+          <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+            <Users className="h-5 w-5 text-blue-400" />
+            Donor Insights
+          </h2>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
               <div>
-                <p className="text-sm font-medium text-gray-700">New Donors (30 days)</p>
+                <p className="text-sm font-medium text-white">New Donors (30 days)</p>
                 <p className="text-xs text-gray-500 mt-1">Recently joined supporters</p>
               </div>
-              <div className="text-2xl font-bold text-blue-600">{recentNewDonors}</div>
+              <div className="text-3xl font-black text-blue-400">{recentNewDonors}</div>
             </div>
-            <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+            <div className="flex items-center justify-between p-4 rounded-xl bg-orange-500/10 border border-orange-500/20">
               <div>
-                <p className="text-sm font-medium text-gray-700">At-Risk Donors</p>
+                <p className="text-sm font-medium text-white">At-Risk Donors</p>
                 <p className="text-xs text-gray-500 mt-1">Need attention to retain</p>
               </div>
-              <div className="text-2xl font-bold text-orange-600">{atRiskDonors}</div>
+              <div className="text-3xl font-black text-orange-400">{atRiskDonors}</div>
             </div>
-            <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+            <div className="flex items-center justify-between p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
               <div>
-                <p className="text-sm font-medium text-gray-700">Active Donors</p>
+                <p className="text-sm font-medium text-white">Active Donors</p>
                 <p className="text-xs text-gray-500 mt-1">Currently engaged</p>
               </div>
-              <div className="text-2xl font-bold text-green-600">{activeDonors}</div>
+              <div className="text-3xl font-black text-emerald-400">{activeDonors}</div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="hover:shadow-xl transition-all duration-200 border-l-4 border-l-purple-500">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-purple-600" />
-              Quick Stats
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+        <div className="glass-card p-6">
+          <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+            <TrendingUp className="h-5 w-5 text-purple-400" />
+            Quick Stats
+          </h2>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 rounded-xl bg-purple-500/10 border border-purple-500/20">
               <div>
-                <p className="text-sm font-medium text-gray-700">Average Gift Size</p>
+                <p className="text-sm font-medium text-white">Average Gift Size</p>
                 <p className="text-xs text-gray-500 mt-1">Per donation</p>
               </div>
-              <div className="text-2xl font-bold text-purple-600">
+              <div className="text-3xl font-black text-purple-400">
                 {formatCurrency(donations.length > 0 ? totalRaised / donations.length : 0)}
               </div>
             </div>
-            <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+            <div className="flex items-center justify-between p-4 rounded-xl bg-green-500/10 border border-green-500/20">
               <div>
-                <p className="text-sm font-medium text-gray-700">Donations This Month</p>
+                <p className="text-sm font-medium text-white">Donations This Month</p>
                 <p className="text-xs text-gray-500 mt-1">Total received</p>
               </div>
-              <div className="text-2xl font-bold text-green-600">{thisMonthDonations.length}</div>
+              <div className="text-3xl font-black text-green-400">{thisMonthDonations.length}</div>
             </div>
-            <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+            <div className="flex items-center justify-between p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/20">
               <div>
-                <p className="text-sm font-medium text-gray-700">Active Campaigns</p>
+                <p className="text-sm font-medium text-white">Active Campaigns</p>
                 <p className="text-xs text-gray-500 mt-1">Currently running</p>
               </div>
-              <div className="text-2xl font-bold text-blue-600">{campaigns.length}</div>
+              <div className="text-3xl font-black text-cyan-400">{campaigns.length}</div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   )

@@ -9,7 +9,7 @@ import { DonorStatusBadge } from '@/components/donors/donor-status-badge'
 import { RetentionRiskBadge } from '@/components/donors/retention-risk-badge'
 import { useDonors } from '@/hooks/use-donors'
 import { formatCurrency, formatDate } from '@/lib/utils'
-import { Plus } from 'lucide-react'
+import { Plus, Users, Search, ChevronRight } from 'lucide-react'
 
 export default function DonorsPage() {
   const [page, setPage] = useState(1)
@@ -42,32 +42,43 @@ export default function DonorsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between bg-gradient-to-r from-primary/10 to-transparent p-6 rounded-xl border border-primary/20">
-        <div>
-          <h1 className="text-4xl font-bold text-gray-900">Donors</h1>
-          <p className="text-gray-600 mt-2 text-lg">
-            Manage your donor relationships and track engagement
-          </p>
+      {/* Page Header */}
+      <div className="page-header">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 className="text-4xl font-black text-white tracking-tight flex items-center gap-3">
+              <Users className="h-10 w-10 text-purple-400" />
+              Donor Gallery
+            </h1>
+            <p className="text-gray-400 mt-2 text-lg">
+              Manage your donor relationships and track engagement
+            </p>
+          </div>
+          <Link href="/donors/new">
+            <Button className="btn-gradient rounded-xl px-5 py-3">
+              <Plus className="mr-2 h-5 w-5" />
+              Add Donor
+            </Button>
+          </Link>
         </div>
-        <Link href="/donors/new">
-          <Button className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg">
-            <Plus className="mr-2 h-5 w-5" />
-            Add Donor
-          </Button>
-        </Link>
       </div>
 
+      {/* Filters */}
       <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
-        <Input
-          placeholder="Search name or email"
-          value={search}
-          onChange={(e) => {
-            setPage(1)
-            setSearch(e.target.value)
-          }}
-        />
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+          <Input
+            placeholder="Search name or email"
+            value={search}
+            onChange={(e) => {
+              setPage(1)
+              setSearch(e.target.value)
+            }}
+            className="dark-input pl-10"
+          />
+        </div>
         <select
-          className="w-full rounded border-2 px-3 py-2 cursor-pointer transition-all duration-200 hover:border-primary/50 hover:shadow-md focus:border-primary focus:ring-2 focus:ring-primary/20"
+          className="dark-select"
           value={status}
           onChange={(e) => {
             setPage(1)
@@ -81,7 +92,7 @@ export default function DonorsPage() {
           <option value="DO_NOT_CONTACT">Do Not Contact</option>
         </select>
         <select
-          className="w-full rounded border-2 px-3 py-2 cursor-pointer transition-all duration-200 hover:border-primary/50 hover:shadow-md focus:border-primary focus:ring-2 focus:ring-primary/20"
+          className="dark-select"
           value={risk}
           onChange={(e) => {
             setPage(1)
@@ -96,7 +107,7 @@ export default function DonorsPage() {
           <option value="UNKNOWN">Unknown</option>
         </select>
         <select
-          className="w-full rounded border-2 px-3 py-2 cursor-pointer transition-all duration-200 hover:border-primary/50 hover:shadow-md focus:border-primary focus:ring-2 focus:ring-primary/20"
+          className="dark-select"
           value={`${sortBy}:${sortOrder}`}
           onChange={(e) => {
             const [field, dir] = e.target.value.split(':')
@@ -115,31 +126,32 @@ export default function DonorsPage() {
         </select>
       </div>
 
-      <div className="rounded-xl border shadow-md bg-white overflow-hidden">
+      {/* Donors Table */}
+      <div className="dark-table">
         <Table>
-          <TableHeader className="bg-gradient-to-r from-gray-50 to-gray-100">
-            <TableRow className="hover:bg-transparent">
-              <TableHead className="cursor-pointer" onClick={() => handleSort('firstName')}>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent border-b border-white/10">
+              <TableHead className="cursor-pointer text-gray-400 hover:text-white transition-colors" onClick={() => handleSort('firstName')}>
                 Name
               </TableHead>
-              <TableHead className="cursor-pointer" onClick={() => handleSort('email')}>
+              <TableHead className="cursor-pointer text-gray-400 hover:text-white transition-colors" onClick={() => handleSort('email')}>
                 Email
               </TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Risk</TableHead>
-              <TableHead className="cursor-pointer" onClick={() => handleSort('totalAmount')}>
+              <TableHead className="text-gray-400">Status</TableHead>
+              <TableHead className="text-gray-400">Risk</TableHead>
+              <TableHead className="cursor-pointer text-gray-400 hover:text-white transition-colors" onClick={() => handleSort('totalAmount')}>
                 Lifetime Value
               </TableHead>
-              <TableHead>Last Gift</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead className="text-gray-400">Last Gift</TableHead>
+              <TableHead className="text-gray-400">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading && (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={7} className="text-center py-8 text-gray-500">
                   <div className="flex items-center justify-center gap-2">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-purple-500 border-t-transparent"></div>
                     Loading donors...
                   </div>
                 </TableCell>
@@ -148,38 +160,38 @@ export default function DonorsPage() {
             {error && (
               <TableRow>
                 <TableCell colSpan={7} className="text-center py-8">
-                  <div className="text-destructive">
+                  <div className="text-red-400">
                     <p className="font-medium">Unable to load donors</p>
-                    <p className="text-sm text-muted-foreground mt-1">{error.message}</p>
+                    <p className="text-sm text-gray-500 mt-1">{error.message}</p>
                   </div>
                 </TableCell>
               </TableRow>
             )}
             {!loading && !error && sortedDonors.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No donors found.</TableCell>
+                <TableCell colSpan={7} className="text-center py-8 text-gray-500">No donors found.</TableCell>
               </TableRow>
             )}
             {!loading && !error &&
               sortedDonors.map((donor) => (
-                <TableRow key={donor.id} className="hover:bg-primary/5 hover:shadow-sm transition-all duration-200 cursor-pointer group">
-                  <TableCell className="font-medium group-hover:text-primary transition-colors">
+                <TableRow key={donor.id} className="border-b border-white/5 hover:bg-purple-500/10 transition-all duration-200 cursor-pointer group">
+                  <TableCell className="font-medium text-white group-hover:text-purple-400 transition-colors">
                     {donor.firstName} {donor.lastName}
                   </TableCell>
-                  <TableCell>{donor.email}</TableCell>
+                  <TableCell className="text-gray-400">{donor.email}</TableCell>
                   <TableCell>
                     <DonorStatusBadge status={donor.status} />
                   </TableCell>
                   <TableCell>
                     <RetentionRiskBadge risk={donor.retentionRisk} />
                   </TableCell>
-                  <TableCell>{formatCurrency(donor.totalAmount || 0)}</TableCell>
-                  <TableCell>{donor.lastGiftDate ? formatDate(donor.lastGiftDate) : '—'}</TableCell>
-                  <TableCell className="space-x-2 whitespace-nowrap">
-                    <Link href={`/donors/${donor.id}`} className="text-sm text-primary font-medium hover:underline hover:text-primary/80 hover:scale-110 inline-block transition-all">
-                      View
+                  <TableCell className="text-emerald-400 font-semibold">{formatCurrency(donor.totalAmount || 0)}</TableCell>
+                  <TableCell className="text-gray-400">{donor.lastGiftDate ? formatDate(donor.lastGiftDate) : '—'}</TableCell>
+                  <TableCell className="space-x-3 whitespace-nowrap">
+                    <Link href={`/donors/${donor.id}`} className="text-sm text-purple-400 font-medium hover:text-purple-300 transition-all inline-flex items-center gap-1">
+                      View <ChevronRight className="h-3 w-3" />
                     </Link>
-                    <Link href={`/donors/${donor.id}/edit`} className="text-sm text-primary font-medium hover:underline hover:text-primary/80 hover:scale-110 inline-block transition-all">
+                    <Link href={`/donors/${donor.id}/edit`} className="text-sm text-gray-400 font-medium hover:text-white transition-all">
                       Edit
                     </Link>
                   </TableCell>
@@ -189,18 +201,25 @@ export default function DonorsPage() {
         </Table>
       </div>
 
+      {/* Pagination */}
       <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-gray-500">
           Page {page} of {totalPages}
         </p>
         <div className="flex gap-2">
-          <Button variant="outline" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>
+          <Button 
+            variant="outline" 
+            disabled={page <= 1} 
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            className="bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:text-white disabled:opacity-50"
+          >
             Previous
           </Button>
           <Button
             variant="outline"
             disabled={page >= totalPages}
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            className="bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:text-white disabled:opacity-50"
           >
             Next
           </Button>

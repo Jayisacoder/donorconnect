@@ -12,16 +12,11 @@ import { formatCurrency, formatDate } from '@/lib/utils'
 
 // Donor detail page
 export default function DonorDetailPage({ params }) {
-<<<<<<< HEAD
-  const { donorId } = params
-  const { donor, loading, error } = useDonor(donorId)
+  const { id } = use(params)
+  const { donor, loading, error } = useDonor(id)
   const [summary, setSummary] = useState('')
   const [summaryLoading, setSummaryLoading] = useState(false)
   const [summaryError, setSummaryError] = useState('')
-=======
-  const { id } = use(params)
-  const { donor, loading, error } = useDonor(id)
->>>>>>> e4e6b2ef9adb1dd3d499dcbd02d409b57e85bedf
 
   if (loading) {
     return <div>Loading donor...</div>
@@ -38,7 +33,7 @@ export default function DonorDetailPage({ params }) {
       const res = await fetch('/api/ai/summarize-donor', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ donorId }),
+        body: JSON.stringify({ donorId: id }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data?.error || 'Failed to summarize')
@@ -105,9 +100,8 @@ export default function DonorDetailPage({ params }) {
         </Card>
       </div>
 
-<<<<<<< HEAD
       <div className="grid gap-4 md:grid-cols-2">
-        <Card>
+        <Card className="hover:shadow-lg transition-shadow duration-200">
           <CardHeader>
             <CardTitle>AI Donor Summary</CardTitle>
           </CardHeader>
@@ -120,7 +114,7 @@ export default function DonorDetailPage({ params }) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="hover:shadow-lg transition-shadow duration-200">
           <CardHeader>
             <CardTitle>Contact</CardTitle>
           </CardHeader>
@@ -133,20 +127,6 @@ export default function DonorDetailPage({ params }) {
           </CardContent>
         </Card>
       </div>
-=======
-      <Card className="hover:shadow-lg transition-shadow duration-200">
-        <CardHeader>
-          <CardTitle>Contact</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2 text-sm text-gray-700">
-          <p><span className="font-medium">Phone:</span> {donor.phone || '—'}</p>
-          <p><span className="font-medium">Address:</span> {donor.address || '—'}</p>
-          <p><span className="font-medium">City:</span> {donor.city || '—'}</p>
-          <p><span className="font-medium">State:</span> {donor.state || '—'}</p>
-          <p><span className="font-medium">Zip:</span> {donor.zipCode || '—'}</p>
-        </CardContent>
-      </Card>
->>>>>>> e4e6b2ef9adb1dd3d499dcbd02d409b57e85bedf
 
       <Card className="hover:shadow-lg transition-shadow duration-200">
         <CardHeader>
