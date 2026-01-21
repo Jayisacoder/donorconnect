@@ -362,6 +362,8 @@ export function WorkflowBuilderForm({ workflow, onSubmit, submitting }) {
                         </select>
                       </div>
                     )}
+
+                    {step.type === 'wait' && (
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
                           <span className="text-sm text-gray-300">Wait for</span>
