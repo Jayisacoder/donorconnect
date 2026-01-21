@@ -74,7 +74,7 @@ export default function WorkflowDetailPage({ params }) {
               {workflow.isActive ? 'Active' : 'Inactive'}
             </Badge>
           </div>
-          <p className="text-gray-600 mt-1">{workflow.description || 'No description provided.'}</p>
+          <p className="text-gray-400 mt-1">{workflow.description || 'No description provided.'}</p>
         </div>
         <div className="flex gap-2">
           <Button 

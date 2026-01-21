@@ -38,8 +38,8 @@ export default function NewSegmentPage() {
     <div className="space-y-6 max-w-4xl">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Create Segment</h1>
-          <p className="text-gray-600 mt-2">Build a group of donors based on their giving behavior</p>
+          <h1 className="text-3xl font-bold">New Segment</h1>
+          <p className="text-gray-400 mt-2">Build a group of donors based on their giving behavior</p>
         </div>
         <Button variant="outline" onClick={() => router.push('/segments')}>
           Cancel

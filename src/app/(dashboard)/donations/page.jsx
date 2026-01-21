@@ -23,15 +23,9 @@ export default function DonationsPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-3xl font-bold">Donations</h1>
-          <p className="text-gray-600 mt-2">Track all recorded gifts</p>
+          <p className="text-gray-400 mt-2">Track all recorded gifts</p>
         </div>
         <div className="flex gap-2">
-          <Link href="/donations/simulate">
-            <Button variant="outline" className="gap-2">
-              <Zap className="h-4 w-4" />
-              Simulate
-            </Button>
-          </Link>
           <Link href="/donations/new">
             <Button>Record Donation</Button>
           </Link>
@@ -52,7 +46,7 @@ export default function DonationsPage() {
       <DonationList donations={donations} isLoading={loading} />
 
       <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-gray-400">
           Page {page} of {totalPages}
         </p>
         <div className="flex gap-2">

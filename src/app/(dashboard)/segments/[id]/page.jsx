@@ -62,9 +62,9 @@ export default function SegmentDetailPage({ params }) {
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-3xl font-bold">{segment.name}</h1>
-          <p className="text-gray-600 mt-1">{segment.description || 'No description provided.'}</p>
+          <p className="text-gray-300 mt-1">{segment.description || 'No description provided.'}</p>
           {segment.lastCalculated && (
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-400 mt-1">
               Last updated: {new Date(segment.lastCalculated).toLocaleString()}
             </p>
           )}
@@ -91,9 +91,9 @@ export default function SegmentDetailPage({ params }) {
         <CardContent>
           <div className="flex items-baseline gap-2">
             <span className="text-4xl font-bold">{segment.memberCount || 0}</span>
-            <span className="text-gray-600">donor{segment.memberCount !== 1 ? 's' : ''}</span>
+            <span className="text-gray-300">donor{segment.memberCount !== 1 ? 's' : ''}</span>
           </div>
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-sm text-gray-400 mt-2">
             Donors are automatically added based on the segment rules below.
           </p>
         </CardContent>

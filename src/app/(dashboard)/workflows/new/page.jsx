@@ -38,8 +38,8 @@ export default function NewWorkflowPage() {
     <div className="space-y-6 max-w-4xl">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Create Workflow</h1>
-          <p className="text-gray-600 mt-2">Automate donor engagement and follow-ups</p>
+          <h1 className="text-3xl font-bold">New Workflow</h1>
+          <p className="text-gray-400 mt-2">Automate donor engagement and follow-ups</p>
         </div>
         <Button variant="outline" onClick={() => router.push('/workflows')}>
           Cancel

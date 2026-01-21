@@ -13,7 +13,7 @@ export default function WorkflowsPage() {
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-3xl font-bold">Workflows</h1>
-          <p className="text-gray-600 mt-2">Automate follow-ups and donor journeys.</p>
+          <p className="text-gray-400 mt-2">Automate follow-ups and donor journeys.</p>
         </div>
         <a href="/workflows/new">
           <Button>+ New Workflow</Button>

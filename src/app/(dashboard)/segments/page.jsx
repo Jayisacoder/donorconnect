@@ -17,7 +17,7 @@ export default function SegmentsPage() {
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-3xl font-bold">Segments</h1>
-          <p className="text-gray-600 mt-2">Group donors by behavior for targeting and workflows.</p>
+          <p className="text-gray-400 mt-2">Group donors by behavior for targeting and workflows.</p>
         </div>
         <Link href="/segments/new">
           <Button>+ New Segment</Button>
@@ -38,9 +38,9 @@ export default function SegmentsPage() {
                 <Card className="h-full transition-all duration-200 hover:shadow-xl hover:scale-105 hover:border-primary/30 cursor-pointer">
                   <CardHeader>
                     <CardTitle>{segment.name}</CardTitle>
-                    <p className="text-sm text-gray-600">{segment.description || 'No description'}</p>
+                    <p className="text-sm text-gray-400">{segment.description || 'No description'}</p>
                   </CardHeader>
-                  <CardContent className="text-sm text-gray-700">
+                  <CardContent className="text-sm text-gray-300">
                     Members: {segment._count?.members ?? segment.memberCount ?? '—'}
                   </CardContent>
                 </Card>

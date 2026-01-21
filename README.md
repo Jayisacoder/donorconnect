@@ -1,103 +1,70 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/Rgnq8kxT)
-# DonorConnect - Learning Project
+# DonorConnect - Donor Retention Platform
 
-> **🎯 Educational Project**: A complete donor retention platform starter code designed to teach modern full-stack development with Next.js 16, PostgreSQL, and modern React patterns.
+> **Nonprofit Donor Management CRM**: A complete donor retention platform helping nonprofits convert first-time donors into lifelong supporters through AI-powered insights and automated workflows.
 
-## 🚀 What You'll Build
+## 🎯 Project Overview
 
-A production-ready donor retention platform that helps nonprofits solve the critical "first-to-second gift" conversion problem. You'll implement:
+DonorConnect solves a critical problem facing nonprofits: **70% of first-time donors never make a second gift**. This attrition happens due to disconnected data, missed follow-ups, and limited staff capacity to personalize outreach.
 
-- **Multi-tenant donor management** with advanced segmentation
-- **Campaign tracking** with donation recording and analytics
-- **Automated workflows** for donor engagement
-- **Session-based authentication** with role-based access
-- **Real-time dashboard** with interactive data tables
-- **Advanced form handling** with validation and error states
+Our solution centralizes donor management, surfaces retention risks automatically, and uses **AI to generate actionable donor summaries**—enabling small nonprofit teams to act quickly and build lasting relationships.
 
-## 📚 Learning Objectives
+## 🌟 Key Features
 
-This project teaches you modern full-stack web development through hands-on implementation. By completing this project, you will master:
+- **📊 Donor Management**: Complete CRUD for donors with multi-tenant data isolation
+- **💰 Donation Tracking**: Record, view, and analyze donations linked to specific campaigns
+- **📈 Dashboard Analytics**: Real-time metrics showing total donors, donations, and at-risk supporters
+- **🤖 AI Donor Summaries**: OpenAI-powered insights that condense donor history and suggest next actions
+- **🎯 Campaign Management**: Track active fundraising campaigns with goal progress
+- **🔒 Role-Based Access**: Admin-only features for adding donors and recording donations
+- **⚡ Transaction Simulator**: Test workflows without processing real payments
+- **🔐 Secure Authentication**: Session-based auth with HTTP-only cookies
 
-### 🔐 Authentication & Security
-- **Session-based authentication** with HTTP-only cookies (no JWT complexity)
-- **Password hashing** with bcrypt and salt rounds
-- **Route protection** using Next.js 16 middleware
-- **Multi-tenant data isolation** with organization-based filtering
-- **Session management** with automatic cleanup and validation
+## 🛠️ Tech Stack
 
-### 🛠 API Development
-- **RESTful API design** with Next.js App Router
-- **CRUD operations** with proper HTTP methods and status codes
-- **Request/response validation** using Zod schemas
-- **Error handling** with structured error responses
-- **Database integration** with Prisma ORM and PostgreSQL
-- **Multi-tenant architecture** with organization-scoped data
+- **Framework**: Next.js 16 (App Router)
+- **Language**: JavaScript (deliberately chosen for rapid MVP development)
+- **Database**: PostgreSQL with Prisma 7 ORM
+- **UI**: Tailwind CSS 4 + shadcn/ui components
+- **AI**: OpenAI GPT-4o-mini for donor summaries
+- **Testing**: Vitest (unit) + Playwright (E2E)
+- **Deployment**: Vercel
+- **Package Manager**: pnpm 10
 
-### 🎨 Modern React Patterns
-- **React Hook Form** for complex form state management
-- **Custom hooks** for data fetching and state management
-- **Server/client components** with Next.js 16 App Router
-- **Compound components** for reusable UI patterns
-- **Error boundaries** and loading states
-- **Real-time updates** with optimistic UI patterns
+## 🤖 AI Integration
 
-### 🗄️ Database & Data Modeling
-- **Relational database design** with proper normalization
-- **Prisma schema definition** with relationships and constraints
-- **Database migrations** and version control
-- **Seed data** for realistic development and testing
-- **Performance optimization** with proper indexing
-- **Data aggregation** for analytics and reporting
+DonorConnect uses AI responsibly to assist nonprofit staff:
 
-### 🧪 Testing & Quality Assurance
-- **Unit testing** with Vitest and React Testing Library
-- **Integration testing** for API routes and database operations
-- **End-to-end testing** with Playwright
-- **Mock service workers** (MSW) for API testing
-- **Test-driven development** workflow
+### How AI Works
+- **Feature**: AI Donor Summary button on donor profiles
+- **Model**: OpenAI GPT-4o-mini via server-side API route
+- **Data Sent**: Minimal summary data (gift counts, totals, recency, risk level) - NO raw PII
+- **Output**: 60-80 word actionable summary with retention recommendations
+- **Purpose**: Helps staff quickly understand donor relationships and personalize outreach
 
-## 🛤️ Implementation Path
+### Responsible AI Safeguards
+- Server-side only (keys never exposed to client)
+- Organization scoping enforced before summarization
+- Prompts designed to avoid hallucinations and stay concise
+- No training or logging of donor data
+- Clear user control (opt-in feature via button click)
 
-This project uses **TODO-driven development** where each file contains comprehensive implementation guidance:
+See `/ai-policy` page for complete AI documentation.
 
-### Phase 1: Foundation Setup ✅
-- Environment configuration and database setup
-- Prisma schema understanding and seed data exploration
-- shadcn/ui component library familiarization
+## 🚀 Live Demo
 
-### Phase 2: Authentication System
-- Implement session-based authentication (`/src/lib/auth.js`, `/src/lib/session.js`)
-- Build login/register forms (`/src/app/(auth)/`)
-- Add route protection middleware (`/src/middleware.js`)
+**Deployed App**: [https://donorconnect.vercel.app](https://donorconnect.vercel.app)
 
-### Phase 3: API Development  
-- Convert TODO API routes to working endpoints (`/src/app/api/`)
-- Implement validation schemas (`/src/lib/validation/`)
-- Add business logic functions (`/src/lib/api/`)
+**Test Credentials** (after running `npx prisma db seed`):
+- Email: `admin@hopefoundation.org`
+- Password: `password123`
 
-### Phase 4: Dashboard UI
-- Build dashboard pages (`/src/app/(dashboard)/`)
-- Implement data tables and forms
-- Add navigation and user interfaces
+## 📦 Local Development Setup
 
-### Phase 5: Advanced Features
-- Create donor segmentation builder
-- Implement workflow automation
-- Add task management system
-
-### Phase 6: Testing & Polish
-- Write comprehensive tests
-- Performance optimization
-- Documentation and deployment
-
-## 💡 Learning Features
-
-### 📝 TODO-Driven Development
-Every implementation file includes:
-- **Clear function signatures** with expected parameters
-- **Detailed TODO comments** explaining each step
-- **Example usage** showing how components connect
-- **Implementation hints** for complex logic
+### Prerequisites
+- Node.js 18+ 
+- pnpm 10+
+- PostgreSQL database (local or Neon)
 - **Testing suggestions** for validation
 
 ### 🔍 Code Examples Throughout
@@ -130,7 +97,12 @@ export async function createDonor(data, organizationId) {
 1. **Clone and install dependencies:**
    ```bash
    git clone <repository-url>
-   cd donor-connect
+### Installation Steps
+
+1. **Clone and install:**
+   ```bash
+   git clone <your-repo-url>
+   cd donorconnect
    pnpm install
    ```
 
@@ -139,98 +111,45 @@ export async function createDonor(data, organizationId) {
    cp .env.example .env
    ```
    
-   Edit `.env` file with your database connection:
+   Edit `.env` file:
    ```env
-   # For local PostgreSQL
-   DATABASE_URL="postgresql://username:password@localhost:5432/donor_connect?sslmode=disable"
+   # Database
+   DATABASE_URL="postgresql://username:password@localhost:5432/donorconnect?sslmode=disable"
    
-   # For Neon (cloud)
-   DATABASE_URL="postgresql://username:password@host/dbname?sslmode=require"
+   # AI (Optional - for donor summaries)
+   OPENAI_API_KEY="your-openai-api-key"
    ```
 
 3. **Set up database:**
    ```bash
-   # Generate Prisma client (creates /prisma/generated/)
+   # Generate Prisma client
    npx prisma generate
 
-   # Create and run database migrations
-   npx prisma migrate dev --name init_db_setup
+   # Run migrations
+   npx prisma migrate dev
 
-   # Load sample data (75 donors, 200+ donations, campaigns, etc.)
+   # Load seed data (75 donors, 200+ donations)
    npx prisma db seed
    ```
 
-4. **Start development:**
+4. **Start development server:**
    ```bash
    pnpm dev
    ```
    
-   🎉 Open [http://localhost:3000](http://localhost:3000) and start coding!
+   Open [http://localhost:3000](http://localhost:3000)
 
-### 🔑 Test Login Credentials
+## 📋 Available Scripts
 
-After seeding, log in with these credentials to explore the existing data:
-
-- **Email:** `admin@hopefoundation.org`
-- **Password:** `password123`
-
-> **💡 Tip**: Use `npx prisma studio` to explore the database visually while developing.
-
-## 📁 Project Architecture
-
+```bash
+pnpm dev          # Start development server
+pnpm build        # Build for production
+pnpm start        # Start production server
+pnpm lint         # Run ESLint
+pnpm test         # Run Vitest tests
+pnpm test:e2e     # Run Playwright E2E tests
+npx prisma studio # Open database GUI
 ```
-donor-connect/
-├── 🔧 Configuration
-│   ├── prisma.config.js         # Prisma 7 configuration
-│   ├── tailwind.config.js       # Tailwind CSS 4 setup
-│   ├── vitest.config.js         # Testing configuration
-│   └── next.config.js           # Next.js configuration
-│
-├── 🗄️ Database
-│   ├── prisma/
-│   │   ├── schema.prisma        # Complete nonprofit domain model
-│   │   ├── seed.js              # Realistic test data (75 donors, 200+ donations)
-│   │   └── migrations/          # Database version control
-│   │
-├── 📱 Application
-│   ├── src/app/
-│   │   ├── (auth)/              # 🔓 Public authentication pages
-│   │   │   ├── login/page.jsx   # TODO: Login form with validation
-│   │   │   └── register/page.jsx# TODO: Registration form
-│   │   │
-│   │   ├── (dashboard)/         # 🔐 Protected dashboard pages
-│   │   │   ├── donors/          # TODO: Donor CRUD interface
-│   │   │   ├── campaigns/       # TODO: Campaign management
-│   │   │   ├── donations/       # TODO: Donation recording
-│   │   │   ├── segments/        # TODO: Donor segmentation
-│   │   │   └── workflows/       # TODO: Automation builder
-│   │   │
-│   │   ├── api/                 # 🔗 Backend API routes
-│   │   │   ├── auth/            # TODO: Authentication endpoints
-│   │   │   ├── donors/          # TODO: Donor CRUD operations
-│   │   │   ├── donations/       # TODO: Donation tracking
-│   │   │   └── [entity]/        # TODO: Standard REST endpoints
-│   │   │
-│   │   └── middleware.js        # TODO: Route protection & session validation
-│   │
-├── 🧩 Components
-│   ├── src/components/
-│   │   ├── ui/                  # ✅ shadcn/ui components (ready to use)
-│   │   ├── donors/              # TODO: Donor-specific components
-│   │   ├── campaigns/           # TODO: Campaign components
-│   │   └── workflows/           # TODO: Workflow builder components
-│   │
-├── 🔧 Utilities
-│   ├── src/lib/
-│   │   ├── auth.js              # TODO: Authentication helpers
-│   │   ├── session.js           # TODO: Session management
-│   │   ├── db.js                # ✅ Prisma client singleton
-│   │   ├── api/                 # TODO: Business logic functions
-│   │   └── validation/          # TODO: Zod schemas for data validation
-│   │
-└── 🧪 Testing
-    ├── tests/
-    │   ├── e2e/                 # TODO: Playwright end-to-end tests
     │   ├── handlers/            # TODO: MSW mock handlers
     │   └── lib/                 # TODO: Unit tests for utilities
 ```

@@ -1,15 +1,49 @@
 /**
  * Root Homepage - Public landing page
- * Moved from (public)/page.jsx to be at root URL
+ * Displays real database stats
  */
-"use client"
-
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card'
 import { Heart, Users, TrendingUp, Shield } from 'lucide-react'
+import { prisma } from '@/lib/db'
 
-export default function HomePage() {
+function formatCurrency(amount) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(amount)
+}
+
+export default async function HomePage() {
+  // Fetch real data from database
+  let stats = {
+    totalDonors: 0,
+    totalRaised: 0,
+    activeCampaigns: 0,
+  }
+
+  try {
+    const [donors, campaigns, donations] = await Promise.all([
+      prisma.donor.findMany({
+        select: { id: true },
+      }),
+      prisma.campaign.findMany({
+        where: { status: 'ACTIVE' },
+        select: { id: true },
+      }),
+      prisma.donation.findMany({
+        select: { amount: true },
+      }),
+    ])
+
+    stats.totalDonors = donors.length
+    stats.activeCampaigns = campaigns.length
+    stats.totalRaised = donations.reduce((sum, d) => sum + (d.amount || 0), 0)
+  } catch (error) {
+    console.error('Failed to fetch homepage stats:', error)
+    // Fallback to zeros if DB unavailable
+  }
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Public Header */}
@@ -21,6 +55,12 @@ export default function HomePage() {
               <p className="text-sm text-gray-600">Making a difference together</p>
             </div>
             <nav className="flex gap-4">
+              <Link href="/about">
+                <Button variant="ghost">About</Button>
+              </Link>
+              <Link href="/why-donorconnect">
+                <Button variant="ghost">Why DonorConnect</Button>
+              </Link>
               <Link href="/donate">
                 <Button variant="ghost">Donate</Button>
               </Link>
@@ -39,15 +79,22 @@ export default function HomePage() {
           <div className="text-center py-12">
             <Heart className="h-20 w-20 text-red-500 mx-auto mb-6 animate-pulse" />
             <h2 className="text-5xl font-bold mb-4">
-              Make a Difference Today
+              DonorConnect
             </h2>
-            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-              Your generosity helps us build stronger communities and create lasting impact. 
-              Every donation matters.
+            <p className="text-xl text-gray-600 mb-4 max-w-2xl mx-auto font-semibold">
+              <strong>Problem:</strong> Nonprofits lose 70% of first-time donors before their second gift due to disconnected data and missed follow-ups.
+            </p>
+            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto font-semibold">
+              <strong>Solution:</strong> DonorConnect centralizes donor management, automates retention workflows, and uses AI to personalize outreach—helping nonprofits convert more first-time donors into lifelong supporters.
             </p>
             <div className="flex gap-4 justify-center">
-              <Link href="/donate">
+              <Link href="/dashboard">
                 <Button size="lg" className="text-lg px-8">
+                  Go to Dashboard
+                </Button>
+              </Link>
+              <Link href="/donate">
+                <Button size="lg" variant="outline" className="text-lg px-8">
                   <Heart className="h-5 w-5 mr-2" />
                   Donate Now
                 </Button>
@@ -55,26 +102,26 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Stats Section */}
+          {/* Stats Section - Real Data from Database */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card>
               <CardContent className="pt-6 text-center">
                 <Users className="h-12 w-12 text-primary mx-auto mb-3" />
-                <p className="text-3xl font-bold mb-1">1,250+</p>
+                <p className="text-3xl font-bold mb-1">{stats.totalDonors}</p>
                 <p className="text-gray-600">Active Donors</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="pt-6 text-center">
                 <TrendingUp className="h-12 w-12 text-primary mx-auto mb-3" />
-                <p className="text-3xl font-bold mb-1">$2.5M</p>
-                <p className="text-gray-600">Raised This Year</p>
+                <p className="text-3xl font-bold mb-1">{formatCurrency(stats.totalRaised)}</p>
+                <p className="text-gray-600">Total Raised</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="pt-6 text-center">
                 <Heart className="h-12 w-12 text-primary mx-auto mb-3" />
-                <p className="text-3xl font-bold mb-1">50+</p>
+                <p className="text-3xl font-bold mb-1">{stats.activeCampaigns}</p>
                 <p className="text-gray-600">Active Campaigns</p>
               </CardContent>
             </Card>

@@ -22,7 +22,7 @@ export default async function DashboardPage() {
   }
 
   // Fetch data directly from database using organizationId
-  const [donors, donations, campaigns, tasks] = await Promise.all([
+  const [donors, donations, campaigns, tasks, totalDonationsCount] = await Promise.all([
     prisma.donor.findMany({
       where: { organizationId: user.organizationId },
       orderBy: { createdAt: 'desc' },
@@ -41,6 +41,9 @@ export default async function DashboardPage() {
     prisma.task.findMany({
       where: { donor: { organizationId: user.organizationId } },
       orderBy: { dueDate: 'asc' },
+    }),
+    prisma.donation.count({
+      where: { donor: { organizationId: user.organizationId } },
     }),
   ])
 
@@ -128,7 +131,7 @@ export default async function DashboardPage() {
                 <DollarSign className="h-6 w-6 text-green-400" />
               </div>
               <span className="text-sm font-semibold px-3 py-1 rounded-full bg-green-500/30 text-green-300">
-                {donations.length} gifts
+                {totalDonationsCount} gifts
               </span>
             </div>
             <div className="text-4xl font-black text-white mb-1">{formatCurrency(totalRaised)}</div>

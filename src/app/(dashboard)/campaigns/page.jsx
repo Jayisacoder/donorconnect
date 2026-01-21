@@ -23,7 +23,7 @@ export default function CampaignsPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-3xl font-bold">Campaigns</h1>
-          <p className="text-gray-600 mt-2">Track fundraising initiatives and progress</p>
+          <p className="text-gray-400 mt-2">Track fundraising initiatives and progress</p>
         </div>
         <Button disabled variant="outline" title="Campaign creation coming soon" className="shadow-sm">
           New Campaign

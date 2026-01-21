@@ -50,8 +50,8 @@ export default function NewDonationPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Record New Donation</h1>
-        <p className="text-gray-600 mt-2">Log a gift and keep donor metrics up to date.</p>
+        <h1 className="text-3xl font-bold">Record Donation</h1>
+        <p className="text-gray-400 mt-2">Log a gift and keep donor metrics up to date.</p>
       </div>
 
       <Card>

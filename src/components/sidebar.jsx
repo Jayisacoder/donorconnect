@@ -21,7 +21,6 @@ const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
   { name: 'Donors', href: '/donors', icon: Users },
   { name: 'Donations', href: '/donations', icon: Gift },
-  { name: 'Simulate', href: '/donations/simulate', icon: Zap },
   { name: 'Campaigns', href: '/campaigns', icon: TrendingUp },
   { name: 'Tasks', href: '/tasks', icon: CheckSquare },
   { name: 'Segments', href: '/segments', icon: FolderTree },

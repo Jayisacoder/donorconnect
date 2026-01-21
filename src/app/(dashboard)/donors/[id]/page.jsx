@@ -52,7 +52,7 @@ export default function DonorDetailPage({ params }) {
           <h1 className="text-3xl font-bold">
             {donor.firstName} {donor.lastName}
           </h1>
-          <p className="text-gray-600">{donor.email}</p>
+          <p className="text-gray-400">{donor.email}</p>
           <div className="mt-2 flex flex-wrap gap-2">
             <DonorStatusBadge status={donor.status} />
             <RetentionRiskBadge risk={donor.retentionRisk} />
@@ -75,7 +75,7 @@ export default function DonorDetailPage({ params }) {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-semibold">{formatCurrency(donor.totalAmount || 0)}</p>
-            <p className="text-sm text-gray-600">Total raised from this donor</p>
+              <p className="text-sm text-gray-400">Total raised from this donor</p>
           </CardContent>
         </Card>
 
@@ -85,7 +85,7 @@ export default function DonorDetailPage({ params }) {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-semibold">{donor.totalGifts ?? 0}</p>
-            <p className="text-sm text-gray-600">Gifts recorded</p>
+              <p className="text-sm text-gray-400">Gifts recorded</p>
           </CardContent>
         </Card>
 
@@ -95,7 +95,7 @@ export default function DonorDetailPage({ params }) {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-semibold">{donor.lastGiftDate ? formatDate(donor.lastGiftDate) : '—'}</p>
-            <p className="text-sm text-gray-600">Most recent donation date</p>
+              <p className="text-sm text-gray-400">Most recent donation date</p>
           </CardContent>
         </Card>
       </div>
@@ -105,12 +105,12 @@ export default function DonorDetailPage({ params }) {
           <CardHeader>
             <CardTitle>AI Donor Summary</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm text-gray-700">
+            <CardContent className="space-y-3 text-sm text-gray-300">
             <Button variant="outline" onClick={generateSummary} disabled={summaryLoading}>
               {summaryLoading ? 'Generating...' : 'Generate AI Summary'}
             </Button>
             {summaryError && <p className="text-red-600">{summaryError}</p>}
-            {summary && <p className="text-gray-800 leading-relaxed">{summary}</p>}
+              {summary && <p className="text-gray-200 leading-relaxed">{summary}</p>}
           </CardContent>
         </Card>
 
@@ -118,7 +118,7 @@ export default function DonorDetailPage({ params }) {
           <CardHeader>
             <CardTitle>Contact</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm text-gray-700">
+            <CardContent className="space-y-2 text-sm text-gray-300">
             <p><span className="font-medium">Phone:</span> {donor.phone || '—'}</p>
             <p><span className="font-medium">Address:</span> {donor.address || '—'}</p>
             <p><span className="font-medium">City:</span> {donor.city || '—'}</p>
@@ -132,7 +132,7 @@ export default function DonorDetailPage({ params }) {
         <CardHeader>
           <CardTitle>Notes</CardTitle>
         </CardHeader>
-        <CardContent className="text-sm text-gray-700">
+          <CardContent className="text-sm text-gray-300">
           {donor.notes || 'No notes yet.'}
         </CardContent>
       </Card>

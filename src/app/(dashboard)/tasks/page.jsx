@@ -116,10 +116,10 @@ export default function TasksPage() {
       <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-6 rounded-xl border border-primary/20">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900">
+            <h1 className="text-4xl font-bold text-white">
               Tasks & Reminders
             </h1>
-            <p className="text-gray-600 mt-3 text-lg">Stay on top of follow-ups and stewardship actions.</p>
+            <p className="text-gray-400 mt-3 text-lg">Stay on top of follow-ups and stewardship actions.</p>
           </div>
           <Button className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary shadow-lg">
             <Plus className="h-4 w-4 mr-2" />
@@ -131,31 +131,31 @@ export default function TasksPage() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-blue-500">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-700">Active Tasks</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-200">Active Tasks</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-blue-700">{activeTasks.length}</div>
-            <p className="text-xs text-gray-500 mt-1">Tasks to complete</p>
+            <p className="text-xs text-gray-400 mt-1">Tasks to complete</p>
           </CardContent>
         </Card>
 
         <Card className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-red-500">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-700">Overdue</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-200">Overdue</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-red-700">{overdueTasks.length}</div>
-            <p className="text-xs text-gray-500 mt-1">Need attention</p>
+            <p className="text-xs text-gray-400 mt-1">Need attention</p>
           </CardContent>
         </Card>
 
         <Card className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-green-500">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-700">Completed</CardTitle>
+            <CardTitle className="text-sm font-medium text-gray-200">Completed</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-green-700">{completedTasks.length}</div>
-            <p className="text-xs text-gray-500 mt-1">Done this month</p>
+            <p className="text-xs text-gray-400 mt-1">Done this month</p>
           </CardContent>
         </Card>
       </div>
@@ -216,7 +216,7 @@ export default function TasksPage() {
                       <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <h3
                           className={`font-medium ${
-                            task.status === 'COMPLETED' ? 'line-through text-gray-500' : 'text-gray-900'
+                            task.status === 'COMPLETED' ? 'line-through text-gray-500' : 'text-white'
                           }`}
                         >
                           {task.title}
@@ -239,9 +239,9 @@ export default function TasksPage() {
                         )}
                       </div>
                       {task.description && (
-                        <p className="text-sm text-gray-600 mb-2">{task.description}</p>
+                        <p className="text-sm text-gray-300 mb-2">{task.description}</p>
                       )}
-                      <div className="flex items-center gap-4 text-xs text-gray-500">
+                      <div className="flex items-center gap-4 text-xs text-gray-400">
                         {task.donor && (
                           <Link
                             href={`/donors/${task.donor.id}`}

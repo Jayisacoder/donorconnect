@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 import { getSession } from '@/lib/session'
 import { prisma } from '@/lib/db'
 import { updateDonorSchema } from '@/lib/validation/donor-schema'
-import { updateDonorMetrics } from '@/lib/api/donors'
+import { updateDonorMetrics, getDonor } from '@/lib/api/donors'
 
 export async function GET(request, { params }) {
   try {
@@ -11,9 +11,9 @@ export async function GET(request, { params }) {
     const session = await getSession(sessionToken)
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    const donor = await prisma.donor.findFirst({
-      where: { id: params.id, organizationId: session.user.organizationId },
-      include: { donations: true, interactions: true, tasks: true },
+    const donor = await getDonor({
+      id: params.id,
+      organizationId: session.user.organizationId,
     })
 
     if (!donor) return NextResponse.json({ error: 'Not found' }, { status: 404 })
