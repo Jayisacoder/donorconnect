@@ -3,12 +3,11 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Select } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { CheckCircle2, Loader2, Zap } from 'lucide-react'
-import { toast } from 'sonner'
 
 export function TransactionSimulator() {
   const [donors, setDonors] = useState([])
@@ -16,6 +15,7 @@ export function TransactionSimulator() {
   const [loading, setLoading] = useState(true)
   const [simulating, setSimulating] = useState(false)
   const [result, setResult] = useState(null)
+  const [errorMessage, setErrorMessage] = useState('')
 
   const [formData, setFormData] = useState({
     donorId: '',
@@ -48,12 +48,13 @@ export function TransactionSimulator() {
   const handleSimulate = async (e) => {
     e.preventDefault()
     if (!formData.donorId) {
-      toast.error('Please select a donor')
+      setErrorMessage('Please select a donor')
       return
     }
 
     setSimulating(true)
     setResult(null)
+    setErrorMessage('')
 
     try {
       const res = await fetch('/api/donations', {
@@ -73,9 +74,9 @@ export function TransactionSimulator() {
       
       const data = await res.json()
       setResult(data.donation)
-      toast.success('Transaction simulated successfully!')
+      setErrorMessage('')
     } catch (error) {
-      toast.error('Failed to simulate transaction')
+      setErrorMessage('Failed to simulate transaction')
     } finally {
       setSimulating(false)
     }
@@ -106,40 +107,31 @@ export function TransactionSimulator() {
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="donor">Select Donor</Label>
-                <Select 
-                  value={formData.donorId} 
-                  onValueChange={(val) => setFormData({ ...formData, donorId: val })}
+                <Select
+                  value={formData.donorId}
+                  onChange={(e) => setFormData({ ...formData, donorId: e.target.value })}
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Choose a donor..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {donors.map(donor => (
-                      <SelectItem key={donor.id} value={donor.id}>
-                        {donor.firstName} {donor.lastName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
+                  <option value="">Choose a donor...</option>
+                  {donors.map((donor) => (
+                    <option key={donor.id} value={donor.id}>
+                      {donor.firstName} {donor.lastName}
+                    </option>
+                  ))}
                 </Select>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="campaign">Campaign (Optional)</Label>
-                <Select 
-                  value={formData.campaignId} 
-                  onValueChange={(val) => setFormData({ ...formData, campaignId: val })}
+                <Select
+                  value={formData.campaignId}
+                  onChange={(e) => setFormData({ ...formData, campaignId: e.target.value })}
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Choose a campaign..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">None</SelectItem>
-                    {campaigns.map(campaign => (
-                      <SelectItem key={campaign.id} value={campaign.id}>
-                        {campaign.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
+                  <option value="">None</option>
+                  {campaigns.map((campaign) => (
+                    <option key={campaign.id} value={campaign.id}>
+                      {campaign.name}
+                    </option>
+                  ))}
                 </Select>
               </div>
 
@@ -155,18 +147,13 @@ export function TransactionSimulator() {
 
               <div className="space-y-2">
                 <Label htmlFor="type">Donation Type</Label>
-                <Select 
-                  value={formData.type} 
-                  onValueChange={(val) => setFormData({ ...formData, type: val })}
+                <Select
+                  value={formData.type}
+                  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                 >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ONE_TIME">One-time</SelectItem>
-                    <SelectItem value="RECURRING">Recurring</SelectItem>
-                    <SelectItem value="PLEDGE">Pledge</SelectItem>
-                  </SelectContent>
+                  <option value="ONE_TIME">One-time</option>
+                  <option value="RECURRING">Recurring</option>
+                  <option value="PLEDGE">Pledge</option>
                 </Select>
               </div>
             </div>
@@ -196,6 +183,13 @@ export function TransactionSimulator() {
             A donation of ${result.amount} from {donors.find(d => d.id === result.donorId)?.firstName} has been recorded.
             The donor's total giving and last gift date have been updated.
           </AlertDescription>
+        </Alert>
+      )}
+
+      {errorMessage && (
+        <Alert variant="destructive">
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{errorMessage}</AlertDescription>
         </Alert>
       )}
     </div>
