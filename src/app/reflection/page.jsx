@@ -2,7 +2,6 @@
 
 import ProtectedGate from '@/components/protected-gate'
 
-export const metadata = { title: 'Reflection | DonorConnect' }
 
 export default function ReflectionPage() {
   return (

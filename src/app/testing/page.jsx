@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 
-export const metadata = { title: 'Testing & Feedback | DonorConnect' }
 
 export default function TestingPage() {
   const [entries, setEntries] = useState([])

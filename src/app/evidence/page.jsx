@@ -2,7 +2,6 @@
 
 import ProtectedGate from '@/components/protected-gate'
 
-export const metadata = { title: 'Evidence & Rubric | DonorConnect' }
 
 export default function EvidencePage() {
   return (
