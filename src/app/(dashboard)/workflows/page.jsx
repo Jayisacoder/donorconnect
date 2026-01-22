@@ -34,14 +34,14 @@ export default function WorkflowsPage() {
                       <span className={`text-xs font-medium rounded px-2 py-1 ${
                         wf.isActive 
                           ? 'bg-green-100 text-green-800' 
-                          : 'bg-gray-100 text-gray-700'
+                          : 'bg-slate-700 text-gray-200'
                       }`}>
                         {wf.isActive ? 'Active' : 'Inactive'}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600">{wf.description || 'No description'}</p>
+                    <p className="text-sm text-gray-200">{wf.description || 'No description'}</p>
                   </CardHeader>
-                  <CardContent className="space-y-2 text-sm text-gray-700">
+                  <CardContent className="space-y-2 text-sm text-gray-300">
                     <p><span className="font-medium">Trigger:</span> {wf.trigger.replace(/_/g, ' ')}</p>
                     <p><span className="font-medium">Steps:</span> {Array.isArray(wf.steps) ? wf.steps.length : 0}</p>
                     <p><span className="font-medium">Executions:</span> {wf.executionCount || 0}</p>
@@ -50,7 +50,7 @@ export default function WorkflowsPage() {
               </a>
             ))
           ) : (
-            <p className="text-sm text-gray-600">No workflows found. Click "New Workflow" to create one.</p>
+            <p className="text-sm text-gray-300">No workflows found. Click "New Workflow" to create one.</p>
           )}
         </div>
       )}

@@ -20,6 +20,12 @@ export default function PublicLayout({ children }) {
               </Link>
             </div>
             <nav className="flex gap-4 items-center">
+              <Link href="/about">
+                <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-purple-500/20">About</Button>
+              </Link>
+              <Link href="/why-donorconnect">
+                <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-purple-500/20">Why DonorConnect</Button>
+              </Link>
               <Link href="/donate">
                 <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-purple-500/20">Donate</Button>
               </Link>

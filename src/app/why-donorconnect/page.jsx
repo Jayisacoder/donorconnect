@@ -6,13 +6,16 @@ export const metadata = { title: 'Why DonorConnect' }
 export default function WhyDonorConnectPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-900 to-slate-950">
-      {/* Header */}
+      {/* Public Header */}
       <header className="bg-slate-900/50 border-b border-purple-500/20 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/" className="hover:opacity-80 transition">
-              <h1 className="text-2xl font-bold text-purple-400">DonorConnect</h1>
-            </Link>
+            <div>
+              <Link href="/" className="hover:opacity-80 transition">
+                <h1 className="text-2xl font-bold text-purple-400">DonorConnect</h1>
+                <p className="text-sm text-gray-400">Making a difference together</p>
+              </Link>
+            </div>
             <nav className="flex gap-4 items-center">
               <Link href="/about">
                 <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-purple-500/20">About</Button>

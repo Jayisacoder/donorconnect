@@ -42,7 +42,13 @@ export function WorkflowBuilderForm({ workflow, onSubmit, submitting }) {
   const [isActive, setIsActive] = useState(workflow?.isActive ?? false)
   const [trigger, setTrigger] = useState(workflow?.trigger || 'FIRST_DONATION')
   const [segmentId, setSegmentId] = useState(workflow?.segmentId || '')
-  const [steps, setSteps] = useState(workflow?.steps || [])
+  const [steps, setSteps] = useState(() => {
+    // Ensure all steps have unique IDs
+    const stepsWithIds = (workflow?.steps || []).map(step => 
+      step.id ? step : { ...step, id: generateUniqueId() }
+    )
+    return stepsWithIds
+  })
   const [segments, setSegments] = useState([])
 
   useEffect(() => {
