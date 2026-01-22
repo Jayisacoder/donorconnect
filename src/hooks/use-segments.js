@@ -1,11 +1,12 @@
 // React hook for segment data management
 import { useState, useEffect } from 'react'
 
-export function useSegments(page = 1, limit = 20, filters = {}) {
+export function useSegments(page = 1, limit = 20, filters = {}, options = {}) {
 	const [segments, setSegments] = useState([])
 	const [pagination, setPagination] = useState({ total: 0, page, limit })
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState(null)
+  const pollMs = Number(options.pollMs || 0)
 
 	const buildQuery = () => {
 		const params = new URLSearchParams()
@@ -37,6 +38,14 @@ export function useSegments(page = 1, limit = 20, filters = {}) {
 		fetchSegments()
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [page, limit, filters.search, filters.sortBy, filters.sortOrder])
+
+  // Optional polling to keep counts fresh
+  useEffect(() => {
+    if (!pollMs || pollMs < 1000) return
+    const id = setInterval(fetchSegments, pollMs)
+    return () => clearInterval(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pollMs, page, limit, filters.search, filters.sortBy, filters.sortOrder])
 
 	return { segments, pagination, loading, error, refetch: fetchSegments }
 }

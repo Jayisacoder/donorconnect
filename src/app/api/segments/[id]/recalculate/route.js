@@ -69,31 +69,35 @@ async function findMatchingDonors(organizationId, rules) {
     where.retentionRisk = { in: rules.retentionRisk }
   }
 
-  if (rules.status && rules.status.length > 0) {
+  if (rules?.status?.length) {
     where.status = { in: rules.status }
   }
 
-  if (rules.totalGiftsRange) {
+  // Support both giftCountRange (new) and totalGiftsRange (old) for backward compatibility
+  const giftRange = rules?.giftCountRange || rules?.totalGiftsRange
+  if (giftRange) {
     where.totalGifts = {}
-    if (rules.totalGiftsRange.min !== undefined) {
-      where.totalGifts.gte = rules.totalGiftsRange.min
-    }
-    if (rules.totalGiftsRange.max !== undefined) {
-      where.totalGifts.lte = rules.totalGiftsRange.max
-    }
+    if (giftRange.min !== undefined) where.totalGifts.gte = giftRange.min
+    if (giftRange.max !== undefined) where.totalGifts.lte = giftRange.max
   }
 
-  if (rules.totalAmountRange) {
+  // Support both totalGiftAmountRange (new) and totalAmountRange (old) for backward compatibility
+  const amountRange = rules?.totalGiftAmountRange || rules?.totalAmountRange
+  if (amountRange) {
     where.totalAmount = {}
-    if (rules.totalAmountRange.min !== undefined) {
-      where.totalAmount.gte = rules.totalAmountRange.min
-    }
-    if (rules.totalAmountRange.max !== undefined) {
-      where.totalAmount.lte = rules.totalAmountRange.max
-    }
+    if (amountRange.min !== undefined) where.totalAmount.gte = amountRange.min
+    if (amountRange.max !== undefined) where.totalAmount.lte = amountRange.max
   }
 
-  if (rules.daysSinceLastGift !== undefined) {
+  if (rules?.lastGiftDateRange) {
+    const { start, end } = rules.lastGiftDateRange
+    where.lastGiftDate = {}
+    if (start) where.lastGiftDate.gte = new Date(start)
+    if (end) where.lastGiftDate.lte = new Date(end)
+  }
+
+  // Legacy field support
+  if (rules?.daysSinceLastGift !== undefined) {
     const cutoffDate = new Date()
     cutoffDate.setDate(cutoffDate.getDate() - rules.daysSinceLastGift)
     where.lastGiftDate = { lt: cutoffDate }

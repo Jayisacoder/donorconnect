@@ -1,6 +1,8 @@
 // Business logic for donor operations
 import { prisma } from '../db'
 import { updateDonorSchema } from '../validation/donor-schema'
+import { triggerWorkflows } from './workflows'
+import { buildDonorWhereFromSegmentRules } from './segment-rules'
 
 /**
  * TODO: Get a single donor by ID
@@ -136,4 +138,94 @@ export async function updateDonorMetrics(donorId) {
       retentionRisk,
     },
   })
+
+  // After metrics update, refresh segment memberships for this donor
+  await refreshSegmentsForDonor(donorId)
+}
+
+/**
+ * Recalculate segment membership for a single donor across all org segments
+ * Ensures segments reflect latest donor metrics automatically
+ */
+async function refreshSegmentsForDonor(donorId) {
+  const donor = await prisma.donor.findUnique({
+    where: { id: donorId },
+    select: {
+      id: true,
+      organizationId: true,
+      retentionRisk: true,
+      status: true,
+      totalGifts: true,
+      totalAmount: true,
+      lastGiftDate: true,
+      email: true,
+    },
+  })
+  if (!donor) return
+
+  const segments = await prisma.segment.findMany({
+    where: { organizationId: donor.organizationId },
+    select: { id: true, rules: true },
+  })
+
+  for (const seg of segments) {
+    const rules = seg.rules || {}
+    
+    // Use the new rule translator
+    const donorWhere = buildDonorWhereFromSegmentRules(rules)
+    
+    // Check if donor matches
+    const matches = await prisma.donor.count({
+      where: {
+        id: donor.id,
+        organizationId: donor.organizationId,
+        ...donorWhere
+      }
+    }) > 0
+
+    // Update membership
+    const existing = await prisma.segmentMember.findFirst({
+      where: { segmentId: seg.id, donorId: donor.id },
+      select: { id: true },
+    })
+
+    if (matches && !existing) {
+      await prisma.segmentMember.create({ data: { segmentId: seg.id, donorId: donor.id } })
+      
+      // Trigger SEGMENT_ENTRY workflows when donor joins a segment
+      // Fetch segment name from segments array for context
+      const segmentWithName = await prisma.segment.findUnique({
+        where: { id: seg.id },
+        select: { name: true },
+      })
+      
+      await triggerWorkflows({
+        trigger: 'SEGMENT_ENTRY',
+        organizationId: donor.organizationId,
+        donorId: donor.id,
+        segmentId: seg.id,
+        context: { segmentName: segmentWithName?.name || 'Unknown' },
+      }).catch(err => console.error('Workflow trigger failed:', err))
+    } else if (!matches && existing) {
+      await prisma.segmentMember.delete({ where: { id: existing.id } })
+    }
+  }
+
+  // Update counts for all segments in org
+  const counts = await prisma.segmentMember.groupBy({
+    by: ['segmentId'],
+    _count: { segmentId: true },
+    where: { segment: { organizationId: donor.organizationId } },
+  })
+
+  const countMap = new Map(counts.map(c => [c.segmentId, c._count.segmentId]))
+  const allSegs = await prisma.segment.findMany({
+    where: { organizationId: donor.organizationId },
+    select: { id: true },
+  })
+  
+  for (const s of allSegs) {
+    const n = countMap.get(s.id) || 0
+    await prisma.segment.update({ where: { id: s.id }, data: { memberCount: n } })
+  }
 }

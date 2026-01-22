@@ -24,9 +24,11 @@ export default function CampaignsPage() {
           <h1 className="text-3xl font-bold">Campaigns</h1>
           <p className="text-gray-400 mt-2">Track fundraising initiatives and progress</p>
         </div>
-        <Button disabled variant="outline" title="Campaign creation coming soon" className="shadow-sm">
-          New Campaign
-        </Button>
+        <Link href="/campaigns/new">
+          <Button className="shadow-sm">
+            New Campaign
+          </Button>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-3">

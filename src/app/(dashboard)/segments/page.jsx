@@ -41,7 +41,7 @@ export default function SegmentsPage() {
                     <p className="text-sm text-gray-400">{segment.description || 'No description'}</p>
                   </CardHeader>
                   <CardContent className="text-sm text-gray-300">
-                    Members: {segment._count?.members ?? segment.memberCount ?? '—'}
+                    Members: {segment.memberCount ?? '—'}
                   </CardContent>
                 </Card>
               </Link>

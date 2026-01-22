@@ -72,10 +72,15 @@ export default async function DashboardPage() {
     .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
     .slice(0, 5)
   
-  // Get recent donors (last 30 days)
+  // Get recent donors (last 30 days) - based on first gift date, else fallback to createdAt
   const thirtyDaysAgo = new Date(now)
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-  const recentNewDonors = donors.filter(d => new Date(d.createdAt) >= thirtyDaysAgo).length
+  const recentNewDonors = donors.filter(d => {
+    // A donor is "new" if they gave their first gift recently.
+    // Use firstGiftDate if available, otherwise createdAt (for manual entries without gifts yet)
+    const startDate = d.firstGiftDate ? new Date(d.firstGiftDate) : new Date(d.createdAt)
+    return startDate >= thirtyDaysAgo
+  }).length
   
   // Get at-risk donors
   const atRiskDonors = donors.filter(d => d.retentionRisk === 'HIGH' || d.retentionRisk === 'CRITICAL').length

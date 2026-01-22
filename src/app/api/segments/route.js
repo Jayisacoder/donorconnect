@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import { getSession } from '@/lib/session'
 import { prisma } from '@/lib/db'
 import { createSegmentSchema, segmentListQuerySchema } from '@/lib/validation/segment-schema'
+import { countSegmentDonors, syncSegmentMembership } from '@/lib/api/segment-rules'
 
 export async function GET(request) {
   try {
@@ -33,8 +34,12 @@ export async function GET(request) {
       prisma.segment.count({ where }),
     ])
 
-    return NextResponse.json({ segments, pagination: { total, page: params.page, limit: params.limit } })
+    return NextResponse.json({ 
+      segments, 
+      pagination: { total, page: params.page, limit: params.limit } 
+    })
   } catch (error) {
+    console.error('Error in GET /api/segments:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -59,82 +64,33 @@ export async function POST(request) {
       data: {
         ...data,
         organizationId,
+        memberCount: 0,
         lastCalculated: new Date(),
       },
     })
 
-    // Calculate and add matching donors
-    const matchingDonors = await findMatchingDonors(organizationId, data.rules)
-    
-    if (matchingDonors.length > 0) {
-      await prisma.segmentMember.createMany({
-        data: matchingDonors.map(donor => ({
-          segmentId: segment.id,
-          donorId: donor.id,
-        })),
-        skipDuplicates: true,
-      })
+    // Sync membership (computes + materializes join table)
+    const syncResult = await syncSegmentMembership(segment.id, organizationId, data.rules)
 
-      // Update member count
-      await prisma.segment.update({
-        where: { id: segment.id },
-        data: { memberCount: matchingDonors.length },
-      })
-    }
-
-    return NextResponse.json({ segment, memberCount: matchingDonors.length }, { status: 201 })
+    return NextResponse.json({ 
+      segment: {
+        ...segment,
+        memberCount: syncResult.totalCount,
+        lastCalculated: new Date()
+      },
+      memberCount: syncResult.totalCount
+    }, { status: 201 })
   } catch (error) {
     console.error('Error creating segment:', error)
+    
+    // Handle Zod validation errors
+    if (error.name === 'ZodError') {
+      return NextResponse.json({ 
+        error: 'Validation error', 
+        details: error.errors 
+      }, { status: 400 })
+    }
+    
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
-}
-
-// Helper function to find matching donors based on rules
-async function findMatchingDonors(organizationId, rules) {
-  const where = { organizationId }
-
-  if (rules.retentionRisk && rules.retentionRisk.length > 0) {
-    where.retentionRisk = { in: rules.retentionRisk }
-  }
-
-  if (rules.status && rules.status.length > 0) {
-    where.status = { in: rules.status }
-  }
-
-  if (rules.totalGiftsRange) {
-    where.totalGifts = {}
-    if (rules.totalGiftsRange.min !== undefined) {
-      where.totalGifts.gte = rules.totalGiftsRange.min
-    }
-    if (rules.totalGiftsRange.max !== undefined) {
-      where.totalGifts.lte = rules.totalGiftsRange.max
-    }
-  }
-
-  if (rules.totalAmountRange) {
-    where.totalAmount = {}
-    if (rules.totalAmountRange.min !== undefined) {
-      where.totalAmount.gte = rules.totalAmountRange.min
-    }
-    if (rules.totalAmountRange.max !== undefined) {
-      where.totalAmount.lte = rules.totalAmountRange.max
-    }
-  }
-
-  if (rules.daysSinceLastGift !== undefined) {
-    const cutoffDate = new Date()
-    cutoffDate.setDate(cutoffDate.getDate() - rules.daysSinceLastGift)
-    where.lastGiftDate = { lt: cutoffDate }
-  }
-
-  if (rules.hasEmail === true) {
-    where.email = { not: null }
-  } else if (rules.hasEmail === false) {
-    where.email = null
-  }
-
-  return await prisma.donor.findMany({
-    where,
-    select: { id: true },
-  })
 }

@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server'
 import { getSession } from '@/lib/session'
 import { prisma } from '@/lib/db'
+import { updateDonorMetrics } from '@/lib/api/donors'
 
 export async function GET(request) {
   try {
@@ -103,6 +104,9 @@ export async function POST(request) {
         organizationId: session.user.organizationId,
       },
     })
+
+    // Initialize metrics and segment membership for new donor
+    await updateDonorMetrics(donor.id)
 
     return NextResponse.json({ donor }, { status: 201 })
   } catch (error) {

@@ -60,6 +60,29 @@ export default function WorkflowDetailPage({ params }) {
     }
   }
 
+  const handleManualExecute = async () => {
+    if (!confirm('Execute this workflow manually? This will run all steps immediately.')) return
+    
+    try {
+      const res = await fetch(`/api/workflows/${workflowId}/execute`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ context: { manualExecution: true } }),
+      })
+      
+      if (res.ok) {
+        alert('Workflow executed successfully!')
+        await loadWorkflow()
+      } else {
+        const error = await res.json()
+        alert(error.error || 'Failed to execute workflow')
+      }
+    } catch (error) {
+      console.error('Error executing workflow:', error)
+      alert('Failed to execute workflow')
+    }
+  }
+
   if (loading) return <div>Loading workflow...</div>
   if (error || !workflow) return <div>{error || 'Workflow not found.'}</div>
 
@@ -76,6 +99,14 @@ export default function WorkflowDetailPage({ params }) {
           <p className="text-gray-400 mt-1">{workflow.description || 'No description provided.'}</p>
         </div>
         <div className="flex gap-2">
+          <Button 
+            variant="outline"
+            onClick={handleManualExecute}
+            className="gap-2"
+          >
+            <Play className="h-4 w-4" />
+            Run Now
+          </Button>
           <Link href={`/workflows/${workflowId}/edit`}>
             <Button className="gap-2 bg-purple-600 hover:bg-purple-700 text-white">
               <Edit className="h-4 w-4" />
