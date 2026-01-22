@@ -39,6 +39,15 @@ export default function EvidencePage() {
             <li>Prompts crafted to request summaries/suggestions, not decisions.</li>
           </ul>
         </section>
+
+        <section className="space-y-3 text-gray-200">
+          <h2 className="text-2xl font-semibold text-white">CCC.1.4 – Test and improve a solution</h2>
+          <ul className="list-disc space-y-2 pl-6">
+            <li>Testing capture: <a className="text-blue-400 underline" href="/testing">/testing</a> – record user sessions, export JSON.</li>
+            <li>Use saved entries to identify pain points and prioritize revisions.</li>
+            <li>Reflection on improvements: <a className="text-blue-400 underline" href="/reflection">/reflection</a>.</li>
+          </ul>
+        </section>
       </div>
     </ProtectedGate>
   )
