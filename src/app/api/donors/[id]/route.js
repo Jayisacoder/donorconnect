@@ -7,12 +7,13 @@ import { updateDonorMetrics, getDonor } from '@/lib/api/donors'
 
 export async function GET(request, { params }) {
   try {
+    const { id } = await params
     const sessionToken = request.cookies.get('session')?.value
     const session = await getSession(sessionToken)
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const donor = await getDonor({
-      id: params.id,
+      id,
       organizationId: session.user.organizationId,
     })
 
@@ -26,6 +27,7 @@ export async function GET(request, { params }) {
 
 export async function PATCH(request, { params }) {
   try {
+    const { id } = await params
     const sessionToken = request.cookies.get('session')?.value
     const session = await getSession(sessionToken)
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -38,7 +40,7 @@ export async function PATCH(request, { params }) {
     const data = updateDonorSchema.parse(body)
 
     const donor = await prisma.donor.update({
-      where: { id: params.id },
+      where: { id },
       data,
     })
 
@@ -52,6 +54,7 @@ export async function PATCH(request, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
+    const { id } = await params
     const sessionToken = request.cookies.get('session')?.value
     const session = await getSession(sessionToken)
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -60,7 +63,7 @@ export async function DELETE(request, { params }) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    await prisma.donor.delete({ where: { id: params.id } })
+    await prisma.donor.delete({ where: { id } })
     return NextResponse.json({ success: true })
   } catch (error) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

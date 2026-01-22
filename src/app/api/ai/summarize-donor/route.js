@@ -31,17 +31,16 @@ export async function POST(request) {
       totalAmount: donor.totalAmount,
       totalGifts: donor.totalGifts,
       lastGiftDate: donor.lastGiftDate,
+      notes: donor.notes || null,
       recentDonations: donor.donations.map((d) => ({ amount: d.amount, date: d.date })),
     }
 
     const apiKey = process.env.OPENAI_API_KEY
     if (!apiKey) {
-      // Fallback simple summary when no key is set
-      const fallback = `Donor ${summaryPayload.name} has ${summaryPayload.totalGifts || 0} gifts totaling $${summaryPayload.totalAmount || 0}. Risk: ${summaryPayload.retentionRisk}. Last gift: ${summaryPayload.lastGiftDate || 'unknown'}.`
-      return NextResponse.json({ summary: fallback })
+      return NextResponse.json({ error: 'OPENAI_API_KEY is not configured' }, { status: 503 })
     }
 
-    const prompt = `You are a donor success assistant. Summarize this donor in 80 words max with risk and next action. Data: ${JSON.stringify(summaryPayload)}.`
+    const prompt = `You are a donor success assistant. Summarize this donor in 80-100 words max with risk assessment and suggested next action. Use any notes about the donor to personalize the recommendation. Data: ${JSON.stringify(summaryPayload)}.`
 
     const aiRes = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',

@@ -58,24 +58,24 @@ export default function CampaignsPage() {
                       <CardTitle>{campaign.name}</CardTitle>
                       <CampaignStatusBadge status={campaign.status} />
                     </div>
-                    <p className="text-sm text-gray-600">{campaign.description || 'No description'}</p>
+                    <p className="text-sm text-gray-400">{campaign.description || 'No description'}</p>
                   </CardHeader>
-                  <CardContent className="space-y-2 text-sm text-gray-700">
+                  <CardContent className="space-y-2 text-sm text-gray-300">
                     <p>
-                      <span className="font-medium">Goal:</span> {campaign.goalAmount ? formatCurrency(campaign.goalAmount) : '—'}
+                      <span className="font-medium text-white">Goal:</span> {campaign.goalAmount ? formatCurrency(campaign.goalAmount) : '—'}
                     </p>
                     <p>
-                      <span className="font-medium">Start:</span> {campaign.startDate ? formatDate(campaign.startDate) : '—'}
+                      <span className="font-medium text-white">Start:</span> {campaign.startDate ? formatDate(campaign.startDate) : '—'}
                     </p>
                     <p>
-                      <span className="font-medium">End:</span> {campaign.endDate ? formatDate(campaign.endDate) : '—'}
+                      <span className="font-medium text-white">End:</span> {campaign.endDate ? formatDate(campaign.endDate) : '—'}
                     </p>
                   </CardContent>
                 </Card>
               </Link>
             ))
           ) : (
-            <p className="text-sm text-gray-600">No campaigns found.</p>
+            <p className="text-sm text-gray-400">No campaigns found.</p>
           )}
         </div>
       )}

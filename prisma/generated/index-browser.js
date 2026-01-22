@@ -158,6 +158,7 @@ exports.Prisma.DonorScalarFieldEnum = {
   city: 'city',
   state: 'state',
   zipCode: 'zipCode',
+  notes: 'notes',
   status: 'status',
   retentionRisk: 'retentionRisk',
   totalGifts: 'totalGifts',

@@ -263,11 +263,76 @@ async function main() {
   const cities = ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 'Philadelphia', 'San Antonio', 'San Diego']
   const states = ['NY', 'CA', 'IL', 'TX', 'AZ', 'PA']
 
+  // Personalized notes for donors to give AI more context
+  const donorNotes = [
+    'Board member introduced this donor at the spring gala. Very passionate about education programs.',
+    'Prefers email communication only. Works in healthcare and interested in community health initiatives.',
+    'Long-time volunteer before becoming a donor. Knows several staff members personally.',
+    'Corporate match eligible through employer. Reminder to send matching gift forms.',
+    'Attended our open house last fall. Expressed interest in planned giving.',
+    'Connected through local church group. Prefers to give during holiday season.',
+    'Met at community event. Has connections to local business community.',
+    'Referred by existing major donor. Interested in capital campaign.',
+    'Monthly donor prospect - mentioned interest in recurring giving.',
+    'Prefers phone calls over email. Best reached in evenings.',
+    'Recently retired teacher. Passionate about youth programs.',
+    'Small business owner. May be interested in corporate sponsorship.',
+    'Has given to similar organizations. Moved to area recently.',
+    'Attended memorial service for founder. Emotional connection to mission.',
+    'LinkedIn connection with ED. Works in nonprofit consulting.',
+    'Gave first gift in memory of family member. Send anniversary acknowledgment.',
+    'Active on social media. Shares our posts frequently.',
+    'Volunteers at local food bank. Interested in hunger initiatives.',
+    'Former program participant. Now wants to give back.',
+    'Attends annual events regularly. Brings guests who also donate.',
+    'Requested tour of facilities. Very detail-oriented.',
+    'Donor advised fund holder. Prefers year-end giving.',
+    'Young professional. Engaged through workplace giving program.',
+    'Snowbird - winters in Florida. Adjust mailing address seasonally.',
+    'Interested in naming opportunities for new building.',
+    'Prefers to remain anonymous in donor listings.',
+    'Has included us in estate plans. Confirm legacy society membership.',
+    'Gave after reading newsletter story. Responds to impact stories.',
+    'Child participated in summer program. Parent became donor.',
+    'Local realtor. Good community connector.',
+    null, // Some donors have no notes
+    null,
+    'Doctor at regional hospital. Limited availability during weekdays.',
+    'Retired military. Appreciates formal communication style.',
+    'Artist and gallery owner. Interested in arts programming.',
+    'Environmental advocate. Interested in sustainability initiatives.',
+    null,
+    'College professor. Could be good speaker for events.',
+    'Recently widowed. Be sensitive in communications.',
+    'Tech industry. Comfortable with online giving.',
+    null,
+    'Moved from out of state. New to community.',
+    'Local politician. Handle with discretion.',
+    'Faith-based motivation for giving. Quotes scripture in correspondence.',
+    null,
+    'Sports enthusiast. Interested in youth athletics programs.',
+    'Pet lover. Responds to animal-related appeals.',
+    'History buff. Interested in organization heritage.',
+    null,
+    'Accountant. Asks detailed questions about financials.',
+    'Works night shift. Call in afternoons only.',
+    'Large family. Interested in family volunteer opportunities.',
+    null,
+    'Union member. Workplace campaign participant.',
+    'Frequent traveler. Best reached by email.',
+    'Health challenges. Send get-well card when appropriate.',
+    null,
+    'Very private. Do not share info publicly.',
+    'Enthusiastic supporter. Good candidate for testimonial.',
+    'New homeowner in area. Welcome packet sent.',
+  ]
+
   const donors = []
   for (let i = 0; i < 75; i++) {
     const firstName = randomItem(firstNames)
     const lastName = randomItem(lastNames)
     const org = i < 40 ? org1 : org2 // 40 for org1, 35 for org2
+    const notes = donorNotes[i % donorNotes.length]
 
     const donor = await prisma.donor.create({
       data: {
@@ -279,6 +344,7 @@ async function main() {
         city: randomItem(cities),
         state: randomItem(states),
         zipCode: String(Math.floor(Math.random() * 90000) + 10000),
+        notes,
         status: 'ACTIVE',
         retentionRisk: 'UNKNOWN', // Will be updated based on donations
         organizationId: org.id
@@ -624,13 +690,13 @@ async function main() {
     const assignedUser = randomItem(org1Staff)
     const template = randomItem(taskTemplates)
     
-    // Weight status toward active tasks (more TODO/IN_PROGRESS than DONE)
-    const statusWeights = ['TODO', 'TODO', 'TODO', 'IN_PROGRESS', 'IN_PROGRESS', 'DONE']
+    // Weight status toward active tasks (more TODO/IN_PROGRESS than COMPLETED)
+    const statusWeights = ['TODO', 'TODO', 'TODO', 'IN_PROGRESS', 'IN_PROGRESS', 'COMPLETED']
     const status = randomItem(statusWeights)
     
     // Some tasks overdue, some upcoming, some completed
     let daysOffset
-    if (status === 'DONE') {
+    if (status === 'COMPLETED') {
       daysOffset = Math.floor(Math.random() * -30) // Completed in past 30 days
     } else {
       daysOffset = Math.floor(Math.random() * 20) - 5 // Range from 5 days ago to 15 days ahead
@@ -648,7 +714,7 @@ async function main() {
         status,
         priority: template.priority,
         dueDate,
-        completedAt: status === 'DONE' ? randomDate(new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000), now) : null
+        completedAt: status === 'COMPLETED' ? randomDate(new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000), now) : null
       }
     })
     tasks.push(task)

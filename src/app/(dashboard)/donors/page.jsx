@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -12,6 +13,7 @@ import { formatCurrency, formatDate } from '@/lib/utils'
 import { Plus, Users, Search, ChevronRight } from 'lucide-react'
 
 export default function DonorsPage() {
+  const router = useRouter()
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState('')
@@ -174,7 +176,11 @@ export default function DonorsPage() {
             )}
             {!loading && !error &&
               sortedDonors.map((donor) => (
-                <TableRow key={donor.id} className="border-b border-white/5 hover:bg-purple-500/10 transition-all duration-200 cursor-pointer group">
+                <TableRow 
+                  key={donor.id} 
+                  className="border-b border-white/5 hover:bg-purple-500/10 transition-all duration-200 cursor-pointer group"
+                  onClick={() => router.push(`/donors/${donor.id}`)}
+                >
                   <TableCell className="font-medium text-white group-hover:text-purple-400 transition-colors">
                     {donor.firstName} {donor.lastName}
                   </TableCell>
@@ -187,11 +193,12 @@ export default function DonorsPage() {
                   </TableCell>
                   <TableCell className="text-emerald-400 font-semibold">{formatCurrency(donor.totalAmount || 0)}</TableCell>
                   <TableCell className="text-gray-400">{donor.lastGiftDate ? formatDate(donor.lastGiftDate) : '—'}</TableCell>
-                  <TableCell className="space-x-3 whitespace-nowrap">
-                    <Link href={`/donors/${donor.id}`} className="text-sm text-purple-400 font-medium hover:text-purple-300 transition-all inline-flex items-center gap-1">
-                      View <ChevronRight className="h-3 w-3" />
-                    </Link>
-                    <Link href={`/donors/${donor.id}/edit`} className="text-sm text-gray-400 font-medium hover:text-white transition-all">
+                  <TableCell className="whitespace-nowrap">
+                    <Link 
+                      href={`/donors/${donor.id}/edit`} 
+                      className="text-sm text-gray-400 font-medium hover:text-white transition-all"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       Edit
                     </Link>
                   </TableCell>

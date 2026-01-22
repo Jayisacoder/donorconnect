@@ -132,7 +132,7 @@ export default function DonorDetailPage({ params }) {
         <CardHeader>
           <CardTitle>Notes</CardTitle>
         </CardHeader>
-          <CardContent className="text-sm text-gray-300">
+          <CardContent className="text-sm text-white">
           {donor.notes || 'No notes yet.'}
         </CardContent>
       </Card>
