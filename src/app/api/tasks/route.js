@@ -15,10 +15,23 @@ export async function GET(request) {
     const status = url.searchParams.get('status')?.trim()
     const priority = url.searchParams.get('priority')?.trim()
 
+    // Get tasks where either:
+    // 1. Task has a donor that belongs to the org, OR
+    // 2. Task has no donor but assigned user is from the org
     const where = {
-      donor: {
-        organizationId: session.user.organizationId,
-      },
+      OR: [
+        {
+          donor: {
+            organizationId: session.user.organizationId,
+          },
+        },
+        {
+          donorId: null,
+          assignedUser: {
+            organizationId: session.user.organizationId,
+          },
+        },
+      ],
     }
 
     if (status) {

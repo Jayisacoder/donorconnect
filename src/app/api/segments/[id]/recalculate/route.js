@@ -65,11 +65,46 @@ export async function POST(request, { params }) {
 async function findMatchingDonors(organizationId, rules) {
   const where = { organizationId }
 
-  if (rules.retentionRisk && rules.retentionRisk.length > 0) {
+  // Handle legacy field/operator/value format from seed data
+  if (rules?.field && rules?.operator && rules?.value !== undefined) {
+    const { field, operator, value } = rules
+    
+    if (field === 'totalGifts') {
+      if (operator === 'equals') {
+        where.totalGifts = value
+      } else if (operator === 'greaterThan') {
+        where.totalGifts = { gt: value }
+      } else if (operator === 'lessThan') {
+        where.totalGifts = { lt: value }
+      }
+    } else if (field === 'totalAmount') {
+      if (operator === 'equals') {
+        where.totalAmount = value
+      } else if (operator === 'greaterThan') {
+        where.totalAmount = { gt: value }
+      } else if (operator === 'lessThan') {
+        where.totalAmount = { lt: value }
+      }
+    } else if (field === 'retentionRisk') {
+      if (operator === 'equals') {
+        where.retentionRisk = value
+      } else if (operator === 'in') {
+        where.retentionRisk = { in: value }
+      }
+    } else if (field === 'status') {
+      if (operator === 'equals') {
+        where.status = value
+      } else if (operator === 'in') {
+        where.status = { in: value }
+      }
+    }
+  }
+
+  if (rules.retentionRisk && Array.isArray(rules.retentionRisk) && rules.retentionRisk.length > 0) {
     where.retentionRisk = { in: rules.retentionRisk }
   }
 
-  if (rules?.status?.length) {
+  if (rules?.status && Array.isArray(rules.status) && rules.status.length > 0) {
     where.status = { in: rules.status }
   }
 

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Plus, Check, AlertCircle, Clock, Trash2 } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 const priorityConfig = {
   LOW: { bg: 'bg-slate-500/20', text: 'text-slate-300', border: 'border-slate-500/50', dot: 'bg-slate-400' },
@@ -113,10 +114,12 @@ export default function TasksPage() {
             </h1>
             <p className="text-gray-400 mt-3 text-lg">Stay on top of follow-ups and stewardship actions.</p>
           </div>
-          <Button className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary shadow-lg">
-            <Plus className="h-4 w-4 mr-2" />
-            New Task
-          </Button>
+          <Link href="/tasks/new">
+            <Button className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary shadow-lg">
+              <Plus className="h-4 w-4 mr-2" />
+              New Task
+            </Button>
+          </Link>
         </div>
       </div>
 

@@ -56,6 +56,17 @@
     outline: none;
     box-shadow: 0 0 0 2px hsl(var(--color-ring) / 0.5);
   }
+
+  /* Fix date input calendar icon color for dark mode */
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+  }
+  
+  input[type="date"]::-webkit-inner-spin-button,
+  input[type="date"]::-webkit-clear-button {
+    filter: invert(1);
+  }
 }
 
 @layer components {
