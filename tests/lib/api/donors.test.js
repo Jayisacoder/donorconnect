@@ -3,7 +3,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { updateDonorMetrics } from '@/lib/api/donors'
 
-// Mock Prisma
+// Mock Prisma with all needed methods
 vi.mock('@/lib/db', () => ({
   prisma: {
     donation: {
@@ -11,6 +11,19 @@ vi.mock('@/lib/db', () => ({
     },
     donor: {
       update: vi.fn(),
+      findUnique: vi.fn(),
+      count: vi.fn(),
+    },
+    segment: {
+      findMany: vi.fn(),
+      findUnique: vi.fn(),
+      update: vi.fn(),
+    },
+    segmentMember: {
+      findFirst: vi.fn(),
+      create: vi.fn(),
+      delete: vi.fn(),
+      groupBy: vi.fn(),
     },
   },
 }))
@@ -21,8 +34,23 @@ describe('Donor API utilities', () => {
   })
 
   describe('updateDonorMetrics', () => {
-    it('should calculate metrics for donor with one gift', async () => {
+    // Helper to set up common mocks for refreshSegmentsForDonor
+    const setupSegmentMocks = async () => {
       const { prisma } = await import('@/lib/db')
+      prisma.donor.findUnique.mockResolvedValue({
+        id: 'donor-123',
+        organizationId: 'org-123',
+        totalAmount: 100,
+        totalGifts: 1,
+        status: 'ACTIVE',
+      })
+      prisma.segment.findMany.mockResolvedValue([])
+      prisma.segmentMember.groupBy.mockResolvedValue([])
+      return prisma
+    }
+
+    it('should calculate metrics for donor with one gift', async () => {
+      const prisma = await setupSegmentMocks()
 
       const mockDonations = [
         {
@@ -47,7 +75,7 @@ describe('Donor API utilities', () => {
     })
 
     it('should mark donor as CRITICAL after 365+ days inactivity', async () => {
-      const { prisma } = await import('@/lib/db')
+      const prisma = await setupSegmentMocks()
 
       const mockDonations = [
         {
@@ -70,7 +98,7 @@ describe('Donor API utilities', () => {
     })
 
     it('should calculate total amount correctly for multiple donations', async () => {
-      const { prisma } = await import('@/lib/db')
+      const prisma = await setupSegmentMocks()
 
       const mockDonations = [
         { amount: 100, receivedAt: new Date() },

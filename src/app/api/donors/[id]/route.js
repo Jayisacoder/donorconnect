@@ -39,6 +39,21 @@ export async function PATCH(request, { params }) {
     const body = await request.json()
     const data = updateDonorSchema.parse(body)
 
+    // If email is being updated, check for duplicates
+    if (data.email) {
+      const existingDonor = await prisma.donor.findFirst({
+        where: {
+          email: { equals: data.email, mode: 'insensitive' },
+          organizationId: session.user.organizationId,
+          id: { not: id }, // Exclude the current donor
+        },
+      })
+
+      if (existingDonor) {
+        return NextResponse.json({ error: 'A donor with this email already exists' }, { status: 409 })
+      }
+    }
+
     const donor = await prisma.donor.update({
       where: { id },
       data,

@@ -1,8 +1,12 @@
-export const metadata = { title: 'AI Policy & Safeguards | DonorConnect' }
+"use client"
+
+import { DocsNav } from '@/components/docs-nav'
 
 export default function AIPolicyPage() {
   return (
-    <div className="mx-auto max-w-4xl space-y-8 py-12 px-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-900 to-slate-950">
+      <DocsNav />
+      <div className="mx-auto max-w-4xl space-y-8 py-12 pt-24 px-6">
       <div>
         <h1 className="text-4xl font-bold text-white">AI Policy & Safeguards</h1>
         <p className="mt-2 text-lg text-gray-300">How DonorConnect uses AI responsibly to assist, not replace, nonprofit staff.</p>
@@ -225,10 +229,11 @@ export default function AIPolicyPage() {
       {/* Contact */}
       <section className="rounded-lg border border-gray-700 bg-gray-800/50 p-6 text-center">
         <p className="text-gray-400">
-          Questions about our AI usage? Contact us through the application or review our source code on{' '}
-          <a href="https://github.com/LaunchPadPhilly/donorconnect-bc2-Jayisacoder" className="text-blue-400 underline">GitHub</a>.
+          Questions about our AI usage? Review our source code on{' '}
+          <a href="https://github.com/Jayisacoder/donorconnect" className="text-blue-400 underline">GitHub</a>.
         </p>
       </section>
+    </div>
     </div>
   )
 }

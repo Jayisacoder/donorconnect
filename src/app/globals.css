@@ -220,6 +220,18 @@
     cursor: pointer;
   }
 
+  .dark-select option {
+    background: hsl(260 15% 12%);
+    color: white;
+    padding: 0.5rem;
+  }
+
+  .dark-select option:hover,
+  .dark-select option:checked {
+    background: hsl(270 70% 60%);
+    color: white;
+  }
+
   .dark-select:hover {
     border-color: hsl(270 70% 60% / 0.5);
   }
@@ -228,6 +240,24 @@
     border-color: hsl(270 70% 60%);
     box-shadow: 0 0 0 3px hsl(270 70% 60% / 0.2);
     outline: none;
+  }
+
+  /* Generic select option styling for dark mode */
+  select {
+    background: hsl(260 15% 12%);
+    color: white;
+  }
+
+  select option {
+    background: hsl(260 15% 12%);
+    color: white;
+    padding: 0.5rem;
+  }
+
+  select option:hover,
+  select option:checked {
+    background: hsl(270 70% 60%);
+    color: white;
   }
 
   /* Page header styling */

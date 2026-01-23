@@ -22,7 +22,7 @@ export default async function DashboardPage() {
   }
 
   // Fetch data directly from database using organizationId
-  const [donors, donations, campaigns, tasks, totalDonationsCount] = await Promise.all([
+  const [donors, donations, campaignsRaw, tasks, totalDonationsCount] = await Promise.all([
     prisma.donor.findMany({
       where: { organizationId: user.organizationId },
       orderBy: { createdAt: 'desc' },
@@ -35,6 +35,11 @@ export default async function DashboardPage() {
     }),
     prisma.campaign.findMany({
       where: { organizationId: user.organizationId, status: 'ACTIVE' },
+      include: {
+        donations: {
+          select: { amount: true },
+        },
+      },
       orderBy: { startDate: 'desc' },
       take: 5,
     }),
@@ -46,6 +51,12 @@ export default async function DashboardPage() {
       where: { donor: { organizationId: user.organizationId } },
     }),
   ])
+
+  // Calculate currentAmount for each campaign from its donations
+  const campaigns = campaignsRaw.map(campaign => ({
+    ...campaign,
+    currentAmount: campaign.donations.reduce((sum, d) => sum + (d.amount || 0), 0),
+  }))
 
   const totalRaised = donors.reduce((sum, d) => sum + (d.totalAmount || 0), 0)
   const activeDonors = donors.filter(d => d.status === 'ACTIVE').length
@@ -229,7 +240,9 @@ export default async function DashboardPage() {
               <p className="text-gray-500">No active campaigns.</p>
             ) : (
               campaigns.slice(0, 3).map((campaign) => {
-                const progress = campaign.goalAmount > 0 ? (campaign.currentAmount / campaign.goalAmount) * 100 : 0
+                const goalAmount = campaign.goal || 0
+                const currentAmount = campaign.currentAmount || 0
+                const progress = goalAmount > 0 ? (currentAmount / goalAmount) * 100 : 0
                 return (
                   <Link key={campaign.id} href="/campaigns">
                     <div className="p-4 rounded-xl bg-white/5 border border-white/10 hover:border-purple-500/30 transition-all group cursor-pointer">
@@ -244,7 +257,7 @@ export default async function DashboardPage() {
                         />
                       </div>
                       <div className="text-xs text-gray-500 mt-2">
-                        {formatCurrency(campaign.currentAmount)} of {formatCurrency(campaign.goalAmount)}
+                        {formatCurrency(currentAmount)} of {goalAmount > 0 ? formatCurrency(goalAmount) : 'No goal set'}
                       </div>
                     </div>
                   </Link>

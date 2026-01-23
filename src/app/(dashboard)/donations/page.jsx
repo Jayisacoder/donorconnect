@@ -1,7 +1,7 @@
 "use client"
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Zap } from 'lucide-react'
@@ -12,9 +12,25 @@ import { useDonations } from '@/hooks/use-donations'
 export default function DonationsPage() {
   const [page, setPage] = useState(1)
   const [type, setType] = useState('')
+  const [campaignId, setCampaignId] = useState('')
+  const [campaigns, setCampaigns] = useState([])
+  const [minAmount, setMinAmount] = useState('')
+  const [maxAmount, setMaxAmount] = useState('')
+  
   const { donations, pagination, loading } = useDonations(page, 10, {
     type: type || undefined,
+    campaignId: campaignId || undefined,
+    minAmount: minAmount || undefined,
+    maxAmount: maxAmount || undefined,
   })
+
+  // Fetch campaigns for filter dropdown
+  useEffect(() => {
+    fetch('/api/campaigns?limit=100')
+      .then(res => res.json())
+      .then(data => setCampaigns(data.campaigns || []))
+      .catch(() => {})
+  }, [])
 
   const totalPages = Math.max(1, Math.ceil((pagination?.total || 0) / (pagination?.limit || 10)))
 
@@ -32,15 +48,34 @@ export default function DonationsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-        <select className="w-full rounded border-2 px-3 py-2 cursor-pointer transition-all duration-200 hover:border-primary/50 hover:shadow-md focus:border-primary focus:ring-2 focus:ring-primary/20" value={type} onChange={(e) => setType(e.target.value)}>
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
+        <select className="dark-select w-full" value={type} onChange={(e) => { setType(e.target.value); setPage(1) }}>
           <option value="">All Types</option>
           <option value="ONE_TIME">One-time</option>
           <option value="RECURRING">Recurring</option>
           <option value="PLEDGE">Pledge</option>
           <option value="IN_KIND">In-kind</option>
         </select>
-        <Input disabled placeholder="More filters coming soon" />
+        <select className="dark-select w-full" value={campaignId} onChange={(e) => { setCampaignId(e.target.value); setPage(1) }}>
+          <option value="">All Campaigns</option>
+          {campaigns.map(c => (
+            <option key={c.id} value={c.id}>{c.name}</option>
+          ))}
+        </select>
+        <Input 
+          type="number" 
+          placeholder="Min Amount" 
+          value={minAmount} 
+          onChange={(e) => { setMinAmount(e.target.value); setPage(1) }}
+          className="bg-slate-900 border-slate-700"
+        />
+        <Input 
+          type="number" 
+          placeholder="Max Amount" 
+          value={maxAmount} 
+          onChange={(e) => { setMaxAmount(e.target.value); setPage(1) }}
+          className="bg-slate-900 border-slate-700"
+        />
       </div>
 
       <DonationList donations={donations} isLoading={loading} />

@@ -1,12 +1,202 @@
 "use client"
 
 import ProtectedGate from '@/components/protected-gate'
+import { DocsNav } from '@/components/docs-nav'
+import MermaidDiagram from '@/components/mermaid-diagram'
 import Link from 'next/link'
+
+const erdDiagram = `erDiagram
+    Organization ||--o{ User : has
+    Organization ||--o{ Donor : manages
+    Organization ||--o{ Campaign : runs
+    Organization ||--o{ Segment : defines
+    Organization ||--o{ Workflow : configures
+    
+    User ||--o{ Session : maintains
+    User ||--o{ Task : "assigned to"
+    User ||--o{ ActivityLog : generates
+    User ||--o{ WorkflowExecution : executes
+    
+    Donor ||--o{ Donation : makes
+    Donor ||--o{ Interaction : receives
+    Donor ||--o{ Task : "has tasks for"
+    Donor }o--o{ Segment : belongs_to_via
+    
+    Campaign ||--o{ Donation : receives
+    
+    Segment ||--o{ Workflow : triggers
+    Segment ||--o{ SegmentMember : contains
+    
+    Workflow ||--o{ WorkflowExecution : executes
+    
+    Organization {
+        string id PK
+        string name
+        string slug UK
+        text description
+        string website
+        string logo
+        boolean isPublic
+        datetime createdAt
+        datetime updatedAt
+    }
+    
+    User {
+        string id PK
+        string email UK
+        string password
+        string firstName
+        string lastName
+        enum role
+        string organizationId FK
+        datetime createdAt
+        datetime updatedAt
+    }
+    
+    Session {
+        string id PK
+        string token UK
+        string userId FK
+        datetime expiresAt
+        datetime createdAt
+    }
+    
+    Donor {
+        string id PK
+        string organizationId FK
+        string firstName
+        string lastName
+        string email
+        string phone
+        string address
+        string city
+        string state
+        string zipCode
+        text notes
+        enum status
+        enum retentionRisk
+        int totalGifts
+        float totalAmount
+        datetime firstGiftDate
+        datetime lastGiftDate
+        datetime createdAt
+        datetime updatedAt
+    }
+    
+    Donation {
+        string id PK
+        string donorId FK
+        string campaignId FK
+        float amount
+        datetime date
+        enum type
+        string method
+        text notes
+        datetime createdAt
+        datetime updatedAt
+    }
+    
+    Campaign {
+        string id PK
+        string organizationId FK
+        string name
+        text description
+        float goal
+        datetime startDate
+        datetime endDate
+        string type
+        enum status
+        datetime createdAt
+        datetime updatedAt
+    }
+    
+    Interaction {
+        string id PK
+        string donorId FK
+        enum type
+        text subject
+        text notes
+        datetime date
+        string createdById
+        datetime createdAt
+        datetime updatedAt
+    }
+    
+    Task {
+        string id PK
+        string donorId FK
+        string assignedTo FK
+        string title
+        text description
+        enum status
+        enum priority
+        datetime dueDate
+        datetime completedAt
+        datetime createdAt
+        datetime updatedAt
+    }
+    
+    Segment {
+        string id PK
+        string organizationId FK
+        string name
+        text description
+        json rules
+        int memberCount
+        datetime lastCalculated
+        datetime createdAt
+        datetime updatedAt
+    }
+    
+    SegmentMember {
+        string id PK
+        string segmentId FK
+        string donorId FK
+        datetime createdAt
+    }
+    
+    Workflow {
+        string id PK
+        string organizationId FK
+        string segmentId FK
+        string name
+        text description
+        enum trigger
+        json steps
+        boolean isActive
+        int executionCount
+        datetime createdAt
+        datetime updatedAt
+    }
+    
+    WorkflowExecution {
+        string id PK
+        string workflowId FK
+        string executedById FK
+        string status
+        json progress
+        datetime startedAt
+        datetime completedAt
+        text error
+    }
+    
+    ActivityLog {
+        string id PK
+        string userId FK
+        string action
+        string entity
+        string entityId
+        json changes
+        datetime createdAt
+    }
+`
 
 export default function EvidencePage() {
   return (
     <ProtectedGate>
-      <div className="mx-auto max-w-5xl space-y-10 py-12 px-6">
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-900 to-slate-950">
+        <DocsNav />
+        <div className="mx-auto max-w-5xl space-y-10 py-12 pt-24 px-6">
         <div>
           <h1 className="text-4xl font-bold text-white">Evidence & Rubric Alignment</h1>
           <p className="mt-2 text-lg text-gray-300">
@@ -50,7 +240,7 @@ export default function EvidencePage() {
             <h3 className="font-semibold text-white text-lg">🎯 How I Demonstrated This</h3>
             
             <div className="bg-gray-900/50 rounded p-4">
-              <h4 className="font-medium text-white mb-3">Working MVP: 15+ Functional Pages</h4>
+              <h4 className="font-medium text-white mb-3">Working MVP: 12+ Functional Pages</h4>
               <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
                 {[
                   { name: 'Dashboard Analytics', path: '/dashboard', desc: 'Real-time metrics & KPIs' },
@@ -64,9 +254,6 @@ export default function EvidencePage() {
                   { name: 'Task Management', path: '/tasks', desc: 'Follow-up tracking' },
                   { name: 'Login Page', path: '/login', desc: 'Secure authentication' },
                   { name: 'Registration', path: '/register', desc: 'Org creation' },
-                  { name: 'Organization Directory', path: '/organizations', desc: 'Public listing' },
-                  { name: 'Org Public Page', path: '/org/hope-foundation', desc: 'Public profile' },
-                  { name: 'Public Donation', path: '/org/hope-foundation/donate', desc: 'Donation form' },
                   { name: 'AI Policy', path: '/ai-policy', desc: 'Documentation' },
                 ].map((page) => (
                   <Link 
@@ -111,13 +298,17 @@ export default function EvidencePage() {
           <div className="bg-gray-900/50 rounded p-4">
             <h4 className="font-medium text-white mb-3">📎 Direct Evidence Links</h4>
             <div className="flex flex-wrap gap-3">
-              <a href="https://github.com/LaunchPadPhilly/donorconnect-bc2-Jayisacoder" 
+              <a href="https://github.com/Jayisacoder/donorconnect" 
                  className="inline-flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm transition" target="_blank" rel="noreferrer">
                 📂 GitHub Source Code
               </a>
-              <a href="https://donorconnect.vercel.app" 
+              <a href="https://donorconnect-three.vercel.app" 
                  className="inline-flex items-center gap-2 bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded text-sm transition" target="_blank" rel="noreferrer">
                 🌐 Live Deployed App
+              </a>
+              <a href="https://www.notion.so/donorconnect-docs-2ca0485bf39c80e49571e2d8e91584ed" 
+                 className="inline-flex items-center gap-2 bg-purple-700 hover:bg-purple-600 text-white px-4 py-2 rounded text-sm transition" target="_blank" rel="noreferrer">
+                📝 Notion Docs (Labs, Wireframes, Trello)
               </a>
               <Link href="/dashboard" className="inline-flex items-center gap-2 bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm transition">
                 📊 View Dashboard
@@ -156,49 +347,49 @@ export default function EvidencePage() {
             
             <div className="grid gap-4 md:grid-cols-2">
               <div className="bg-gray-900/50 rounded p-4">
-                <h4 className="font-medium text-white mb-3">🧪 Testing Infrastructure</h4>
+                <h4 className="font-medium text-white mb-3">🔍 User Testing & Feedback</h4>
                 <ul className="space-y-2 text-sm">
                   <li className="flex justify-between items-center border-b border-gray-700 pb-2">
-                    <span className="text-gray-300">User testing capture tool</span>
-                    <Link href="/testing" className="text-teal-400 hover:underline">/testing →</Link>
+                    <span className="text-gray-300">Manual testing of all CRUD flows</span>
+                    <span className="text-teal-400 text-xs">✓ Complete</span>
                   </li>
                   <li className="flex justify-between items-center border-b border-gray-700 pb-2">
-                    <span className="text-gray-300">Unit tests (Vitest)</span>
-                    <span className="text-gray-500 text-xs font-mono">pnpm test</span>
+                    <span className="text-gray-300">Cross-browser compatibility check</span>
+                    <span className="text-teal-400 text-xs">✓ Chrome, Firefox</span>
                   </li>
                   <li className="flex justify-between items-center border-b border-gray-700 pb-2">
-                    <span className="text-gray-300">Integration tests</span>
-                    <span className="text-gray-500 text-xs font-mono">tests/integration/</span>
+                    <span className="text-gray-300">UI responsiveness testing</span>
+                    <span className="text-teal-400 text-xs">✓ Desktop, Mobile</span>
                   </li>
                   <li className="flex justify-between items-center">
-                    <span className="text-gray-300">E2E tests (Playwright)</span>
-                    <span className="text-gray-500 text-xs font-mono">pnpm test:e2e</span>
+                    <span className="text-gray-300">Error handling verification</span>
+                    <span className="text-teal-400 text-xs">✓ API responses</span>
                   </li>
                 </ul>
               </div>
 
               <div className="bg-gray-900/50 rounded p-4">
-                <h4 className="font-medium text-white mb-3">📈 Improvement Process</h4>
+                <h4 className="font-medium text-white mb-3">🔧 Issues Fixed Based on Testing</h4>
                 <ol className="space-y-2 text-sm text-gray-300">
                   <li className="flex items-start gap-2">
                     <span className="bg-teal-600 text-white text-xs px-2 py-0.5 rounded">1</span>
-                    <span>Collected feedback via testing page</span>
+                    <span>Fixed dark text on dark background (dropdowns)</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="bg-teal-600 text-white text-xs px-2 py-0.5 rounded">2</span>
-                    <span>Identified UI issues (dark text on dark bg)</span>
+                    <span>Replaced text inputs with proper select menus</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="bg-teal-600 text-white text-xs px-2 py-0.5 rounded">3</span>
-                    <span>Fixed campaign dropdown (was text input)</span>
+                    <span>Added duplicate email prevention for donors</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="bg-teal-600 text-white text-xs px-2 py-0.5 rounded">4</span>
-                    <span>Added donations to campaign detail page</span>
+                    <span>Fixed campaign deletion (unlink donations first)</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="bg-teal-600 text-white text-xs px-2 py-0.5 rounded">5</span>
-                    <span>Documented learnings in reflection</span>
+                    <span>Added working filters to donations page</span>
                   </li>
                 </ol>
               </div>
@@ -241,7 +432,7 @@ export default function EvidencePage() {
             <h3 className="font-semibold text-white text-lg">🎯 How I Demonstrated This</h3>
             
             <div className="grid gap-4 md:grid-cols-3">
-              <a href="https://github.com/LaunchPadPhilly/donorconnect-bc2-Jayisacoder#readme" 
+              <a href="https://github.com/Jayisacoder/donorconnect#readme" 
                  className="bg-gray-900/50 rounded p-4 hover:border-indigo-500 border border-gray-700 transition" target="_blank" rel="noreferrer">
                 <h4 className="font-medium text-white mb-2">📖 README.md</h4>
                 <p className="text-gray-400 text-sm">Comprehensive project overview, setup instructions, architecture explanation</p>
@@ -277,6 +468,19 @@ export default function EvidencePage() {
                   <span className="text-indigo-400">✓</span> Clear component/file naming conventions
                 </li>
               </ul>
+            </div>
+
+            {/* ERD Diagram */}
+            <div className="bg-gray-900/50 rounded p-4">
+              <h4 className="font-medium text-white mb-3">🗄️ Entity Relationship Diagram (ERD)</h4>
+              <p className="text-gray-400 text-sm mb-4">Complete database schema showing all entities, attributes, and relationships:</p>
+              <div className="bg-gray-950 rounded p-4 overflow-x-auto border border-gray-700">
+                <MermaidDiagram chart={erdDiagram} />
+              </div>
+              <p className="text-gray-500 text-xs mt-3">
+                This Mermaid ERD diagram documents all 12 entities, their attributes with types, and relationships with cardinality notation.
+                The schema is implemented in <code className="bg-gray-800 px-1 rounded">prisma/schema.prisma</code>.
+              </p>
             </div>
           </div>
         </section>
@@ -544,13 +748,17 @@ export default function EvidencePage() {
         <section className="rounded-lg border border-gray-700 bg-gray-800/50 p-6">
           <h2 className="text-xl font-semibold text-white mb-4">🔗 Quick Access - All Evidence Links</h2>
           <div className="flex flex-wrap gap-3">
-            <a href="https://github.com/LaunchPadPhilly/donorconnect-bc2-Jayisacoder" 
+            <a href="https://github.com/Jayisacoder/donorconnect" 
                className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm transition" target="_blank" rel="noreferrer">
               📂 GitHub
             </a>
-            <a href="https://donorconnect.vercel.app" 
+            <a href="https://donorconnect-three.vercel.app" 
                className="bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded text-sm transition" target="_blank" rel="noreferrer">
               🌐 Vercel
+            </a>
+            <a href="https://www.notion.so/donorconnect-docs-2ca0485bf39c80e49571e2d8e91584ed" 
+               className="bg-orange-700 hover:bg-orange-600 text-white px-4 py-2 rounded text-sm transition" target="_blank" rel="noreferrer">
+              📝 Notion Docs
             </a>
             <Link href="/dashboard" className="bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm transition">
               📊 Dashboard
@@ -561,11 +769,9 @@ export default function EvidencePage() {
             <Link href="/reflection" className="bg-teal-700 hover:bg-teal-600 text-white px-4 py-2 rounded text-sm transition">
               💭 Reflection
             </Link>
-            <Link href="/testing" className="bg-indigo-700 hover:bg-indigo-600 text-white px-4 py-2 rounded text-sm transition">
-              🧪 Testing
-            </Link>
           </div>
         </section>
+      </div>
       </div>
     </ProtectedGate>
   )

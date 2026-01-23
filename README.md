@@ -2,8 +2,8 @@
 
 > **Helping nonprofits convert first-time donors into lifelong supporters** through intelligent donor management, automated workflows, and AI-powered insights.
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://donorconnect.vercel.app)
-[![GitHub](https://img.shields.io/badge/Source-GitHub-blue)](https://github.com/LaunchPadPhilly/donorconnect-bc2-Jayisacoder)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://donorconnect-three.vercel.app)
+[![GitHub](https://img.shields.io/badge/Source-GitHub-blue)](https://github.com/Jayisacoder/donorconnect)
 
 ---
 
@@ -135,7 +135,7 @@ Organization (tenant boundary)
 
 ```bash
 # Clone repository
-git clone https://github.com/LaunchPadPhilly/donorconnect-bc2-Jayisacoder.git
+git clone https://github.com/Jayisacoder/donorconnect.git
 cd donorconnect
 
 # Install dependencies
@@ -243,7 +243,7 @@ Use any notes to personalize the recommendation. Data: ${JSON.stringify(summaryP
 - ✅ Opt-in feature (user must click button)
 - ✅ Error handling returns user-friendly messages
 
-See [/ai-policy](https://donorconnect.vercel.app/ai-policy) for complete AI documentation.
+See [/ai-policy](https://donorconnect-three.vercel.app/ai-policy) for complete AI documentation.
 
 ---
 
@@ -320,11 +320,11 @@ NEXT_PUBLIC_APP_URL="http://localhost:3000"
 
 | Page | Purpose |
 |------|---------|
-| [/ai-policy](https://donorconnect.vercel.app/ai-policy) | AI ethics, safeguards, and responsible use |
-| [/evidence](https://donorconnect.vercel.app/evidence) | Rubric criteria with direct links to implementation |
-| [/reflection](https://donorconnect.vercel.app/reflection) | Project learnings and challenges |
-| [/testing](https://donorconnect.vercel.app/testing) | User testing capture tool |
-| [/why-donorconnect](https://donorconnect.vercel.app/why-donorconnect) | Value proposition for nonprofits |
+| [/ai-policy](https://donorconnect-three.vercel.app/ai-policy) | AI ethics, safeguards, and responsible use |
+| [/evidence](https://donorconnect-three.vercel.app/evidence) | Rubric criteria with direct links to implementation |
+| [/reflection](https://donorconnect-three.vercel.app/reflection) | Project learnings and challenges |
+| [/testing](https://donorconnect-three.vercel.app/testing) | User testing capture tool |
+| [/why-donorconnect](https://donorconnect-three.vercel.app/why-donorconnect) | Value proposition for nonprofits |
 
 ---
 
@@ -345,11 +345,11 @@ Building DonorConnect demonstrates:
 
 ## 🔗 Links
 
-- **Live Demo**: [https://donorconnect.vercel.app](https://donorconnect.vercel.app)
-- **GitHub**: [https://github.com/LaunchPadPhilly/donorconnect-bc2-Jayisacoder](https://github.com/LaunchPadPhilly/donorconnect-bc2-Jayisacoder)
-- **AI Policy**: [/ai-policy](https://donorconnect.vercel.app/ai-policy)
-- **Evidence**: [/evidence](https://donorconnect.vercel.app/evidence)
-- **Reflection**: [/reflection](https://donorconnect.vercel.app/reflection)
+- **Live Demo**: [https://donorconnect-three.vercel.app](https://donorconnect-three.vercel.app)
+- **GitHub**: [https://github.com/Jayisacoder/donorconnect](https://github.com/Jayisacoder/donorconnect)
+- **AI Policy**: [/ai-policy](https://donorconnect-three.vercel.app/ai-policy)
+- **Evidence**: [/evidence](https://donorconnect-three.vercel.app/evidence)
+- **Reflection**: [/reflection](https://donorconnect-three.vercel.app/reflection)
 
 ---
 

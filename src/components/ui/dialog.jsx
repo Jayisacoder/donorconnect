@@ -44,7 +44,7 @@ export function DialogContent({ className, children, onClose }) {
 
 export function DialogHeader({ className, children }) {
   return (
-    <div className={cn('flex flex-col space-y-1.5 text-center sm:text-left', className)}>
+    <div className={cn('flex flex-col space-y-2 text-center sm:text-left mb-4', className)}>
       {children}
     </div>
   )
@@ -52,7 +52,7 @@ export function DialogHeader({ className, children }) {
 
 export function DialogTitle({ className, children }) {
   return (
-    <h2 className={cn('text-lg font-semibold leading-none tracking-tight', className)}>
+    <h2 className={cn('text-lg font-semibold leading-none tracking-tight text-gray-900', className)}>
       {children}
     </h2>
   )
@@ -60,7 +60,7 @@ export function DialogTitle({ className, children }) {
 
 export function DialogDescription({ className, children }) {
   return (
-    <p className={cn('text-sm text-muted-foreground', className)}>
+    <p className={cn('text-sm text-gray-600 mt-2', className)}>
       {children}
     </p>
   )

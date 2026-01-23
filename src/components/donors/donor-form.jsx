@@ -8,8 +8,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { createDonorSchema, DonorStatusEnum, RetentionRiskEnum } from '@/lib/validation/donor-schema'
 
 export function DonorForm({ donor, onSubmit, onCancel }) {
+  // Use full schema for new donors, partial for editing existing donors
+  const schema = donor ? createDonorSchema.partial() : createDonorSchema
   const form = useForm({
-    resolver: zodResolver(createDonorSchema.partial()),
+    resolver: zodResolver(schema),
     defaultValues: {
       firstName: donor?.firstName || '',
       lastName: donor?.lastName || '',
@@ -37,7 +39,7 @@ export function DonorForm({ donor, onSubmit, onCancel }) {
   }
 
   return (
-    <Form {...form} onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+    <Form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <FormField
           control={form.control}
@@ -164,7 +166,7 @@ export function DonorForm({ donor, onSubmit, onCancel }) {
             <FormItem>
               <FormLabel>Status</FormLabel>
               <FormControl>
-                <select {...field} className="w-full rounded border px-3 py-2">
+                <select {...field} className="dark-select w-full">
                   {DonorStatusEnum.options.map((opt) => (
                     <option key={opt} value={opt}>
                       {opt.replace(/_/g, ' ')}
@@ -184,7 +186,7 @@ export function DonorForm({ donor, onSubmit, onCancel }) {
             <FormItem>
               <FormLabel>Retention Risk</FormLabel>
               <FormControl>
-                <select {...field} className="w-full rounded border px-3 py-2">
+                <select {...field} className="dark-select w-full">
                   {RetentionRiskEnum.options.map((opt) => (
                     <option key={opt} value={opt}>
                       {opt.charAt(0) + opt.slice(1).toLowerCase()}

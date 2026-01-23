@@ -23,14 +23,19 @@ export default function CampaignDetailPage({ params }) {
           <h1 className="text-3xl font-bold text-white">{campaign.name}</h1>
           <div className="mt-2 flex items-center gap-2">
             <CampaignStatusBadge status={campaign.status} />
-            {campaign.goalAmount ? (
-              <span className="text-sm text-gray-300">Goal: {formatCurrency(campaign.goalAmount)}</span>
+            {campaign.goal ? (
+              <span className="text-sm text-gray-300">Goal: {formatCurrency(campaign.goal)}</span>
             ) : null}
           </div>
         </div>
-        <Link href="/campaigns">
-          <Button variant="outline">Back to campaigns</Button>
-        </Link>
+        <div className="flex gap-2">
+          <Link href={`/campaigns/${id}/edit`}>
+            <Button className="btn-gradient">Edit Campaign</Button>
+          </Link>
+          <Link href="/campaigns">
+            <Button variant="outline">Back to campaigns</Button>
+          </Link>
+        </div>
       </div>
 
       <Card>
@@ -61,12 +66,12 @@ export default function CampaignDetailPage({ params }) {
                       {donation.donor?.firstName} {donation.donor?.lastName}
                     </p>
                     <p className="text-sm text-gray-400">
-                      {formatDate(donation.donationDate)}
+                      {formatDate(donation.date)}
                     </p>
                   </div>
                   <div className="text-right">
                     <p className="font-semibold text-green-400">{formatCurrency(donation.amount)}</p>
-                    <p className="text-xs text-gray-500">{donation.donationType}</p>
+                    <p className="text-xs text-gray-500">{donation.type}</p>
                   </div>
                 </div>
               ))}

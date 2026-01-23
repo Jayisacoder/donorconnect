@@ -18,11 +18,11 @@ export function useDonors(page = 1, limit = 20, filters = {}) {
     const params = new URLSearchParams()
     params.set('page', page)
     params.set('limit', limit)
+    params.set('sortBy', filters.sortBy || 'createdAt')
+    params.set('sortOrder', filters.sortOrder || 'desc')
     if (filters.search) params.set('search', filters.search)
     if (filters.status) params.set('status', filters.status)
     if (filters.retentionRisk) params.set('retentionRisk', filters.retentionRisk)
-    if (filters.sortBy) params.set('sortBy', filters.sortBy)
-    if (filters.sortOrder) params.set('sortOrder', filters.sortOrder)
     return params.toString()
   }
 

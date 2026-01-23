@@ -1,13 +1,7 @@
 // Test data factory functions
-// Provides convenient helpers to create mock data for tests
 
 import { randomUUID } from 'crypto'
 
-/**
- * Create test donor data
- * @param {object} overrides - Override default donor properties
- * @returns {object} Donor data object
- */
 export function createTestDonor(overrides = {}) {
   const uuid = randomUUID().slice(0, 8)
 
@@ -34,12 +28,6 @@ export function createTestDonor(overrides = {}) {
   }
 }
 
-/**
- * Create test donation data
- * @param {string} donorId - ID of the donor
- * @param {object} overrides - Override default donation properties
- * @returns {object} Donation data object
- */
 export function createTestDonation(donorId, overrides = {}) {
   return {
     id: overrides.id || randomUUID(),
@@ -56,11 +44,6 @@ export function createTestDonation(donorId, overrides = {}) {
   }
 }
 
-/**
- * Create test campaign data
- * @param {object} overrides - Override default campaign properties
- * @returns {object} Campaign data object
- */
 export function createTestCampaign(overrides = {}) {
   return {
     id: overrides.id || randomUUID(),
@@ -78,11 +61,6 @@ export function createTestCampaign(overrides = {}) {
   }
 }
 
-/**
- * Create test user data
- * @param {object} overrides - Override default user properties
- * @returns {object} User data object
- */
 export function createTestUser(overrides = {}) {
   const uuid = randomUUID().slice(0, 8)
 
@@ -100,11 +78,6 @@ export function createTestUser(overrides = {}) {
   }
 }
 
-/**
- * Create test segment data
- * @param {object} overrides - Override default segment properties
- * @returns {object} Segment data object
- */
 export function createTestSegment(overrides = {}) {
   return {
     id: overrides.id || randomUUID(),
@@ -123,11 +96,6 @@ export function createTestSegment(overrides = {}) {
   }
 }
 
-/**
- * Create test workflow data
- * @param {object} overrides - Override default workflow properties
- * @returns {object} Workflow data object
- */
 export function createTestWorkflow(overrides = {}) {
   return {
     id: overrides.id || randomUUID(),
@@ -148,12 +116,6 @@ export function createTestWorkflow(overrides = {}) {
   }
 }
 
-/**
- * Seed multiple test donors with donations (integration tests)
- * @param {PrismaClient} prisma - Prisma client instance
- * @param {number} count - Number of donors to create
- * @returns {Promise<Array>} Array of created donor objects
- */
 export async function seedTestDonors(prisma, count = 5) {
   const donors = []
 
@@ -182,12 +144,6 @@ export async function seedTestDonors(prisma, count = 5) {
   return donors
 }
 
-/**
- * Create test interaction data
- * @param {string} donorId - ID of the donor
- * @param {object} overrides - Override default interaction properties
- * @returns {object} Interaction data object
- */
 export function createTestInteraction(donorId, overrides = {}) {
   return {
     id: overrides.id || randomUUID(),
@@ -203,11 +159,6 @@ export function createTestInteraction(donorId, overrides = {}) {
   }
 }
 
-/**
- * Create test task data
- * @param {object} overrides - Override default task properties
- * @returns {object} Task data object
- */
 export function createTestTask(overrides = {}) {
   return {
     id: overrides.id || randomUUID(),

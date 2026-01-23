@@ -3,22 +3,14 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Plus, CheckCircle2, Circle, AlertCircle, Clock, Trash2, ChevronDown } from 'lucide-react'
+import { Plus, Check, AlertCircle, Clock, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 
-const priorityColors = {
-  LOW: 'bg-gray-200 text-gray-800 border-gray-500',
-  MEDIUM: 'bg-blue-200 text-blue-800 border-blue-500',
-  HIGH: 'bg-orange-200 text-orange-800 border-orange-500',
-  URGENT: 'bg-red-200 text-red-800 border-red-500',
-}
-
-const statusIcons = {
-  TODO: Circle,
-  IN_PROGRESS: Clock,
-  DONE: CheckCircle2,
+const priorityConfig = {
+  LOW: { bg: 'bg-slate-500/20', text: 'text-slate-300', border: 'border-slate-500/50', dot: 'bg-slate-400' },
+  MEDIUM: { bg: 'bg-blue-500/20', text: 'text-blue-300', border: 'border-blue-500/50', dot: 'bg-blue-400' },
+  HIGH: { bg: 'bg-orange-500/20', text: 'text-orange-300', border: 'border-orange-500/50', dot: 'bg-orange-400' },
+  URGENT: { bg: 'bg-red-500/20', text: 'text-red-300', border: 'border-red-500/50', dot: 'bg-red-400' },
 }
 
 export default function TasksPage() {
@@ -129,33 +121,33 @@ export default function TasksPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-blue-500">
+        <Card className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-blue-500 bg-slate-800/50">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-200">Active Tasks</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-400">Active Tasks</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-blue-700">{activeTasks.length}</div>
-            <p className="text-xs text-gray-400 mt-1">Tasks to complete</p>
+            <div className="text-3xl font-bold text-blue-400">{activeTasks.length}</div>
+            <p className="text-xs text-slate-500 mt-1">Tasks to complete</p>
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-red-500">
+        <Card className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-red-500 bg-slate-800/50">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-200">Overdue</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-400">Overdue</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-red-700">{overdueTasks.length}</div>
-            <p className="text-xs text-gray-400 mt-1">Need attention</p>
+            <div className="text-3xl font-bold text-red-400">{overdueTasks.length}</div>
+            <p className="text-xs text-slate-500 mt-1">Need attention</p>
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-green-500">
+        <Card className="hover:shadow-lg transition-all duration-200 border-l-4 border-l-green-500 bg-slate-800/50">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-200">Completed</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-400">Completed</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-green-700">{completedTasks.length}</div>
-            <p className="text-xs text-gray-400 mt-1">Done this month</p>
+            <div className="text-3xl font-bold text-green-400">{completedTasks.length}</div>
+            <p className="text-xs text-slate-500 mt-1">Done this month</p>
           </CardContent>
         </Card>
       </div>
@@ -197,86 +189,99 @@ export default function TasksPage() {
               No tasks found. Create your first task to get started!
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2">
               {filteredTasks.map((task) => {
-                const StatusIcon = statusIcons[task.status] || Circle
                 const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && task.status !== 'COMPLETED'
+                const isCompleted = task.status === 'COMPLETED'
+                const priority = priorityConfig[task.priority] || priorityConfig.MEDIUM
 
                 return (
                   <div
                     key={task.id}
-                    className="flex items-start gap-4 p-4 rounded-lg border hover:bg-muted/50 transition-all duration-200 group"
+                    className={`flex items-start gap-4 p-4 rounded-xl border transition-all duration-200 group ${
+                      isCompleted 
+                        ? 'bg-slate-800/30 border-slate-700/50 opacity-60' 
+                        : isOverdue 
+                          ? 'bg-red-950/20 border-red-500/30 hover:border-red-500/50' 
+                          : 'bg-slate-800/50 border-slate-700 hover:border-slate-600 hover:bg-slate-800/70'
+                    }`}
                   >
-                    <Checkbox
-                      checked={task.status === 'COMPLETED'}
-                      onCheckedChange={() => toggleTaskStatus(task.id, task.status)}
-                      className="mt-1 flex-shrink-0"
-                    />
+                    {/* Left: Priority indicator bar */}
+                    <div className={`w-1 self-stretch rounded-full ${priority.dot} ${isCompleted ? 'opacity-30' : ''}`} />
+                    
+                    {/* Checkbox */}
+                    <button
+                      onClick={() => toggleTaskStatus(task.id, task.status)}
+                      className={`mt-0.5 flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                        isCompleted 
+                          ? 'bg-green-500 border-green-500 text-white' 
+                          : 'border-slate-500 hover:border-green-400 hover:bg-green-500/10'
+                      }`}
+                    >
+                      {isCompleted && <Check className="h-4 w-4 stroke-[3]" />}
+                    </button>
+                    
+                    {/* Content */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                      <div className="flex items-center gap-3 mb-1">
                         <h3
-                          className={`font-medium ${
-                            task.status === 'COMPLETED' ? 'line-through text-gray-500' : 'text-white'
+                          className={`font-medium text-base ${
+                            isCompleted ? 'line-through text-slate-500' : 'text-white'
                           }`}
                         >
                           {task.title}
                         </h3>
-                        <select
-                          value={task.priority}
-                          onChange={(e) => updateTaskPriority(task.id, e.target.value)}
-                          className={`text-xs px-2 py-1 rounded border-2 font-medium cursor-pointer hover:shadow-sm transition-shadow ${priorityColors[task.priority]}`}
-                        >
-                          <option value="LOW">LOW</option>
-                          <option value="MEDIUM">MEDIUM</option>
-                          <option value="HIGH">HIGH</option>
-                          <option value="URGENT">URGENT</option>
-                        </select>
+                        <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${priority.bg} ${priority.text} border ${priority.border}`}>
+                          {task.priority}
+                        </span>
                         {isOverdue && (
-                          <Badge variant="destructive" className="gap-1">
+                          <span className="flex items-center gap-1 text-xs px-2.5 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30">
                             <AlertCircle className="h-3 w-3" />
                             Overdue
-                          </Badge>
+                          </span>
                         )}
                       </div>
                       {task.description && (
-                        <p className="text-sm text-gray-300 mb-2">{task.description}</p>
+                        <p className={`text-sm mb-2 ${isCompleted ? 'text-slate-600' : 'text-slate-400'}`}>
+                          {task.description}
+                        </p>
                       )}
-                      <div className="flex items-center gap-4 text-xs text-gray-400">
+                      <div className="flex items-center gap-4 text-xs text-slate-500">
                         {task.donor && (
                           <Link
                             href={`/donors/${task.donor.id}`}
-                            className="hover:text-primary hover:underline"
+                            className="flex items-center gap-1 hover:text-primary transition-colors"
                           >
+                            <span className="w-5 h-5 rounded-full bg-slate-700 flex items-center justify-center text-[10px] text-slate-300">
+                              {task.donor.firstName?.[0]}{task.donor.lastName?.[0]}
+                            </span>
                             {task.donor.firstName} {task.donor.lastName}
                           </Link>
                         )}
                         {task.dueDate && (
-                          <span className={isOverdue ? 'text-red-600 font-medium' : ''}>
-                            Due: {new Date(task.dueDate).toLocaleDateString()}
+                          <span className={`flex items-center gap-1 ${isOverdue ? 'text-red-400 font-medium' : ''}`}>
+                            <Clock className="h-3 w-3" />
+                            {new Date(task.dueDate).toLocaleDateString()}
                           </span>
                         )}
                         {task.assignedUser && (
-                          <span>
-                            Assigned to: {task.assignedUser.firstName} {task.assignedUser.lastName}
+                          <span className="flex items-center gap-1">
+                            <span className="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center text-[9px] text-primary">
+                              {task.assignedUser.firstName?.[0]}
+                            </span>
+                            {task.assignedUser.firstName} {task.assignedUser.lastName}
                           </span>
                         )}
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <StatusIcon
-                        className={`h-5 w-5 ${
-                          task.status === 'COMPLETED'
-                            ? 'text-green-600'
-                            : task.status === 'IN_PROGRESS'
-                              ? 'text-blue-600'
-                              : 'text-gray-400'
-                        }`}
-                      />
+                    
+                    {/* Actions */}
+                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => deleteTask(task.id)}
-                        className="opacity-60 group-hover:opacity-100 transition-all text-red-600 hover:text-red-700 hover:bg-red-50 border border-transparent hover:border-red-200"
+                        className="h-8 w-8 p-0 text-slate-400 hover:text-red-400 hover:bg-red-500/10"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

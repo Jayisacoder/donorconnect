@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card'
 import { Heart, Users, TrendingUp, Shield, Building2, Sparkles, BarChart3, Zap } from 'lucide-react'
 import { prisma } from '@/lib/db'
+import { DocsNav } from '@/components/docs-nav'
 
 function formatCurrency(amount) {
   return new Intl.NumberFormat('en-US', {
@@ -43,34 +44,10 @@ export default async function HomePage() {
   }
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-900 to-slate-950">
-      {/* Public Header */}
-      <header className="bg-slate-900/50 border-b border-purple-500/20 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-purple-400">DonorConnect</h1>
-              <p className="text-sm text-gray-400">Making a difference together</p>
-            </div>
-            <nav className="flex gap-4 items-center">
-              <Link href="/organizations">
-                <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-purple-500/20">Find Nonprofits</Button>
-              </Link>
-              <Link href="/about">
-                <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-purple-500/20">About</Button>
-              </Link>
-              <Link href="/why-donorconnect">
-                <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-purple-500/20">Why DonorConnect</Button>
-              </Link>
-              <Link href="/login">
-                <Button className="bg-slate-950 text-white border border-purple-500/50 hover:bg-purple-500/20">Staff Login</Button>
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <DocsNav />
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 pt-24">
         <div className="space-y-16">
           {/* Hero Section */}
           <div className="text-center py-12">
@@ -85,16 +62,9 @@ export default async function HomePage() {
               <strong className="text-white">Solution:</strong> DonorConnect centralizes donor management, automates retention workflows, and uses AI to personalize outreach—helping nonprofits convert more first-time donors into lifelong supporters.
             </p>
             <div className="flex gap-4 justify-center flex-wrap">
-              <Link href="/organizations">
+              <Link href="/login">
                 <Button size="lg" className="text-lg px-8 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white">
-                  <Heart className="h-5 w-5 mr-2" />
-                  Find a Nonprofit to Support
-                </Button>
-              </Link>
-              <Link href="/register">
-                <Button size="lg" className="text-lg px-8 bg-slate-950 text-white border border-purple-500/50 hover:bg-purple-500/20">
-                  <Building2 className="h-5 w-5 mr-2" />
-                  Register Your Nonprofit
+                  Get Started
                 </Button>
               </Link>
             </div>
@@ -194,18 +164,12 @@ export default async function HomePage() {
           <div className="glass-card p-12 text-center border border-purple-500/30 bg-gradient-to-r from-purple-500/10 to-pink-500/10">
             <h3 className="text-3xl font-bold mb-4 text-white">Ready to Get Started?</h3>
             <p className="text-lg text-gray-300 mb-6 max-w-xl mx-auto">
-              Whether you want to donate or register your nonprofit, DonorConnect makes it easy.
+              Improve your donor retention and build lasting relationships with DonorConnect.
             </p>
             <div className="flex gap-4 justify-center flex-wrap">
-              <Link href="/organizations">
+              <Link href="/login">
                 <Button size="lg" className="text-lg px-8 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white">
-                  <Heart className="h-5 w-5 mr-2" />
-                  Find a Nonprofit
-                </Button>
-              </Link>
-              <Link href="/register">
-                <Button size="lg" variant="outline" className="text-lg px-8 border-purple-500/50 text-purple-400 hover:bg-purple-500/20">
-                  Register Your Nonprofit
+                  Get Started
                 </Button>
               </Link>
             </div>
@@ -216,7 +180,7 @@ export default async function HomePage() {
       {/* Footer */}
       <footer className="bg-slate-950 border-t border-purple-500/20 text-gray-400 mt-16">
         <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
               <h4 className="font-bold mb-2 text-white">About</h4>
               <p className="text-sm">
@@ -224,29 +188,23 @@ export default async function HomePage() {
               </p>
             </div>
             <div>
-              <h4 className="font-bold mb-2 text-white">For Donors</h4>
+              <h4 className="font-bold mb-2 text-white">Learn More</h4>
               <ul className="text-sm space-y-1">
-                <li><Link href="/organizations" className="hover:text-purple-400">Find Nonprofits</Link></li>
-                <li><Link href="/about" className="hover:text-purple-400">About Us</Link></li>
+                <li><Link href="/about" className="hover:text-purple-400">The Problem</Link></li>
+                <li><Link href="/why-donorconnect" className="hover:text-purple-400">Our Solution</Link></li>
+                <li><Link href="/ai-policy" className="hover:text-purple-400">AI Policy</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-bold mb-2 text-white">For Nonprofits</h4>
+              <h4 className="font-bold mb-2 text-white">Get Started</h4>
               <ul className="text-sm space-y-1">
-                <li><Link href="/register" className="hover:text-purple-400">Get Started</Link></li>
                 <li><Link href="/login" className="hover:text-purple-400">Staff Login</Link></li>
+                <li><Link href="/register" className="hover:text-purple-400">Register Nonprofit</Link></li>
               </ul>
-            </div>
-            <div>
-              <h4 className="font-bold mb-2 text-white">Contact</h4>
-              <p className="text-sm">
-                Email: support@donorconnect.org<br />
-                Phone: (555) 123-4567
-              </p>
             </div>
           </div>
           <div className="border-t border-purple-500/20 mt-8 pt-6 text-center text-sm text-gray-500">
-            © 2025 DonorConnect. All rights reserved.
+            © 2026 DonorConnect. All rights reserved.
           </div>
         </div>
       </footer>

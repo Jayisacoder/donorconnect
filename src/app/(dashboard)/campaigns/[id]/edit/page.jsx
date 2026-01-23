@@ -1,11 +1,11 @@
 "use client"
 
-import { useState } from 'react'
+import { use, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { createCampaignSchema } from '@/lib/validation/campaign-schema'
+import { updateCampaignSchema } from '@/lib/validation/campaign-schema'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -13,44 +13,64 @@ import { ArrowLeft } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { useToast, Toaster } from '@/lib/toast'
 
-export default function NewCampaignPage() {
+export default function EditCampaignPage({ params }) {
+  const { id } = use(params)
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [fetching, setFetching] = useState(true)
   const { toast, toasts, dismissToast } = useToast()
 
   const {
     register,
     handleSubmit,
-    setValue,
-    watch,
+    reset,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(createCampaignSchema),
-    defaultValues: {
-      status: 'DRAFT',
-    },
+    resolver: zodResolver(updateCampaignSchema),
   })
 
-  const startDate = watch('startDate')
-  const endDate = watch('endDate')
+  useEffect(() => {
+    const fetchCampaign = async () => {
+      try {
+        const res = await fetch(`/api/campaigns/${id}`)
+        if (!res.ok) throw new Error('Failed to load campaign')
+        const { campaign } = await res.json()
+        
+        // Format dates for input fields
+        const formData = {
+          name: campaign.name || '',
+          description: campaign.description || '',
+          goal: campaign.goal || '',
+          status: campaign.status || 'DRAFT',
+          startDate: campaign.startDate ? new Date(campaign.startDate).toISOString().split('T')[0] : '',
+          endDate: campaign.endDate ? new Date(campaign.endDate).toISOString().split('T')[0] : '',
+        }
+        reset(formData)
+      } catch (error) {
+        toast.error('Failed to load campaign')
+      } finally {
+        setFetching(false)
+      }
+    }
+    fetchCampaign()
+  }, [id, reset, toast])
 
   const onSubmit = async (data) => {
     setLoading(true)
     try {
-      const res = await fetch('/api/campaigns', {
-        method: 'POST',
+      const res = await fetch(`/api/campaigns/${id}`, {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       })
 
       if (!res.ok) {
         const error = await res.json()
-        throw new Error(error.error || 'Failed to create campaign')
+        throw new Error(error.error || 'Failed to update campaign')
       }
 
-      const { campaign } = await res.json()
-      toast.success('Campaign created successfully')
-      router.push(`/campaigns/${campaign.id}`)
+      toast.success('Campaign updated successfully')
+      router.push(`/campaigns/${id}`)
     } catch (error) {
       toast.error(error.message)
     } finally {
@@ -58,19 +78,23 @@ export default function NewCampaignPage() {
     }
   }
 
+  if (fetching) {
+    return <div className="text-white">Loading campaign...</div>
+  }
+
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <Toaster toasts={toasts} onDismiss={dismissToast} />
       
       <div className="flex items-center gap-4">
-        <Link href="/campaigns">
+        <Link href={`/campaigns/${id}`}>
           <Button variant="ghost" size="icon">
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">New Campaign</h1>
-          <p className="text-gray-400">Launch a new fundraising initiative</p>
+          <h1 className="text-3xl font-bold tracking-tight text-white">Edit Campaign</h1>
+          <p className="text-gray-400">Update campaign details</p>
         </div>
       </div>
 
@@ -78,7 +102,7 @@ export default function NewCampaignPage() {
         <CardHeader>
           <CardTitle>Campaign Details</CardTitle>
           <CardDescription>
-            Define the goals and timeline for this campaign.
+            Modify the goals and timeline for this campaign.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -131,6 +155,25 @@ export default function NewCampaignPage() {
               )}
             </div>
 
+            {/* Status */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-200">
+                Status
+              </label>
+              <select
+                {...register('status')}
+                className="w-full rounded border border-slate-800 bg-slate-950 px-3 py-2 text-white"
+              >
+                <option value="DRAFT">Draft</option>
+                <option value="ACTIVE">Active</option>
+                <option value="COMPLETED">Completed</option>
+                <option value="ARCHIVED">Archived</option>
+              </select>
+              {errors.status && (
+                <p className="text-sm text-red-400">{errors.status.message}</p>
+              )}
+            </div>
+
             {/* Dates (Start & End) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -159,11 +202,11 @@ export default function NewCampaignPage() {
             </div>
 
             <div className="flex justify-end gap-3 pt-4">
-              <Link href="/campaigns">
+              <Link href={`/campaigns/${id}`}>
                 <Button variant="outline" type="button">Cancel</Button>
               </Link>
               <Button type="submit" disabled={loading} className="btn-gradient">
-                {loading ? 'Creating...' : 'Create Campaign'}
+                {loading ? 'Saving...' : 'Save Changes'}
               </Button>
             </div>
 

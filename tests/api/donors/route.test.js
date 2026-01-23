@@ -21,8 +21,14 @@ vi.mock('@/lib/db', () => ({
       findMany: vi.fn(),
       count: vi.fn(),
       create: vi.fn(),
+      findFirst: vi.fn(), // for duplicate email check
     },
   },
+}))
+
+// Mock updateDonorMetrics to prevent it from running real database calls
+vi.mock('@/lib/api/donors', () => ({
+  updateDonorMetrics: vi.fn().mockResolvedValue(undefined),
 }))
 
 describe('GET /api/donors', () => {
@@ -214,6 +220,7 @@ describe('POST /api/donors', () => {
       email: 'john@example.com',
       organizationId: 'org-123',
     })
+    prisma.donor.findFirst.mockResolvedValue(null) // No duplicate email
     prisma.donor.create.mockResolvedValue(newDonor)
 
     const request = createMockRequest('POST', '/api/donors', {
@@ -224,6 +231,8 @@ describe('POST /api/donors', () => {
     })
     const response = await POST(request)
     const data = await response.json()
+
+    console.log('Response status:', response.status, 'Data:', data)
 
     expect(response.status).toBe(201)
     expect(data.donor.id).toBe('donor-new')
@@ -283,6 +292,7 @@ describe('POST /api/donors', () => {
       status: 'ACTIVE',
       retentionRisk: 'UNKNOWN',
     })
+    prisma.donor.findFirst.mockResolvedValue(null) // No duplicate email
     prisma.donor.create.mockResolvedValue(newDonor)
 
     const request = createMockRequest('POST', '/api/donors', {

@@ -44,7 +44,7 @@ export function DonationForm({ donation, donors, campaigns = [], onSubmit, onCan
   }
 
   return (
-    <Form {...form} onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+    <Form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
       <FormField
           control={form.control}
           name="donorId"
@@ -52,7 +52,7 @@ export function DonationForm({ donation, donors, campaigns = [], onSubmit, onCan
             <FormItem>
               <FormLabel>Donor</FormLabel>
               <FormControl>
-                <select {...field} className="w-full rounded border px-3 py-2">
+                <select {...field} className="dark-select w-full">
                   {donors?.map((d) => (
                     <option key={d.id} value={d.id}>
                       {d.firstName} {d.lastName} ({d.email})
@@ -103,7 +103,7 @@ export function DonationForm({ donation, donors, campaigns = [], onSubmit, onCan
               <FormItem>
                 <FormLabel>Type</FormLabel>
                 <FormControl>
-                  <select {...field} className="w-full rounded border px-3 py-2">
+                  <select {...field} className="dark-select w-full">
                     <option value="ONE_TIME">One-time</option>
                     <option value="RECURRING">Recurring</option>
                     <option value="PLEDGE">Pledge</option>
@@ -139,7 +139,7 @@ export function DonationForm({ donation, donors, campaigns = [], onSubmit, onCan
               <FormControl>
                 <select 
                   {...field} 
-                  className="w-full rounded border border-gray-700 bg-gray-900 px-3 py-2 text-white"
+                  className="dark-select w-full"
                 >
                   <option value="">— No campaign —</option>
                   {campaigns.map((c) => (

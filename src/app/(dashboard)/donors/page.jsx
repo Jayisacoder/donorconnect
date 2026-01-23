@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -8,26 +8,55 @@ import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { DonorStatusBadge } from '@/components/donors/donor-status-badge'
 import { RetentionRiskBadge } from '@/components/donors/retention-risk-badge'
+import { ConfirmDialog } from '@/components/confirm-dialog'
 import { useDonors } from '@/hooks/use-donors'
 import { formatCurrency, formatDate } from '@/lib/utils'
-import { Plus, Users, Search, ChevronRight } from 'lucide-react'
+import { Plus, Users, Search, ChevronRight, Trash2 } from 'lucide-react'
 
 export default function DonorsPage() {
   const router = useRouter()
   const [page, setPage] = useState(1)
+  const [searchInput, setSearchInput] = useState('')
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState('')
   const [risk, setRisk] = useState('')
-  const [sortBy, setSortBy] = useState('firstName')
-  const [sortOrder, setSortOrder] = useState('asc')
+  const [sortBy, setSortBy] = useState('createdAt')
+  const [sortOrder, setSortOrder] = useState('desc')
 
-  const { donors, pagination, loading, error } = useDonors(page, 10, {
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearch(searchInput)
+      setPage(1)
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [searchInput])
+
+  const { donors, pagination, loading, error, refetch } = useDonors(page, 10, {
     search,
     status: status || undefined,
     retentionRisk: risk || undefined,
     sortBy,
     sortOrder,
   })
+
+  // Delete donor state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [donorToDelete, setDonorToDelete] = useState(null)
+
+  const handleDeleteClick = (e, donor) => {
+    e.stopPropagation()
+    setDonorToDelete(donor)
+    setDeleteDialogOpen(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!donorToDelete) return
+    const res = await fetch(`/api/donors/${donorToDelete.id}`, { method: 'DELETE' })
+    if (res.ok) {
+      refetch()
+    }
+  }
 
   const handleSort = (field) => {
     if (sortBy === field) {
@@ -71,11 +100,8 @@ export default function DonorsPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
           <Input
             placeholder="Search name or email"
-            value={search}
-            onChange={(e) => {
-              setPage(1)
-              setSearch(e.target.value)
-            }}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
             className="dark-input pl-10"
           />
         </div>
@@ -115,16 +141,17 @@ export default function DonorsPage() {
             const [field, dir] = e.target.value.split(':')
             setSortBy(field)
             setSortOrder(dir)
+            setPage(1)
           }}
         >
+          <option value="createdAt:desc">Newest</option>
+          <option value="createdAt:asc">Oldest</option>
           <option value="firstName:asc">Name (A→Z)</option>
           <option value="firstName:desc">Name (Z→A)</option>
           <option value="email:asc">Email (A→Z)</option>
           <option value="email:desc">Email (Z→A)</option>
           <option value="totalAmount:desc">Total Raised (High→Low)</option>
           <option value="totalAmount:asc">Total Raised (Low→High)</option>
-          <option value="createdAt:desc">Newest</option>
-          <option value="createdAt:asc">Oldest</option>
         </select>
       </div>
 
@@ -194,13 +221,22 @@ export default function DonorsPage() {
                   <TableCell className="text-emerald-400 font-semibold">{formatCurrency(donor.totalAmount || 0)}</TableCell>
                   <TableCell className="text-gray-400">{donor.lastGiftDate ? formatDate(donor.lastGiftDate) : '—'}</TableCell>
                   <TableCell className="whitespace-nowrap">
-                    <Link 
-                      href={`/donors/${donor.id}/edit`} 
-                      className="text-sm text-gray-400 font-medium hover:text-white transition-all"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      Edit
-                    </Link>
+                    <div className="flex items-center gap-2">
+                      <Link 
+                        href={`/donors/${donor.id}/edit`} 
+                        className="text-sm text-gray-400 font-medium hover:text-white transition-all"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Edit
+                      </Link>
+                      <button
+                        onClick={(e) => handleDeleteClick(e, donor)}
+                        className="text-sm text-gray-400 hover:text-red-400 transition-all p-1"
+                        title="Delete donor"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -232,6 +268,20 @@ export default function DonorsPage() {
           </Button>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={deleteDialogOpen}
+        onClose={() => {
+          setDeleteDialogOpen(false)
+          setDonorToDelete(null)
+        }}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Donor"
+        description={donorToDelete ? `Are you sure you want to delete ${donorToDelete.firstName} ${donorToDelete.lastName}? This will also remove all their donation history and cannot be undone.` : ''}
+        confirmText="Delete"
+        variant="destructive"
+      />
     </div>
   )
 }

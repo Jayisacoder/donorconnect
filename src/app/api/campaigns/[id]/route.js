@@ -20,7 +20,7 @@ export async function GET(request, { params }) {
               select: { id: true, firstName: true, lastName: true, email: true }
             }
           },
-          orderBy: { donationDate: 'desc' }
+          orderBy: { date: 'desc' }
         }
       }
     })
@@ -72,10 +72,28 @@ export async function DELETE(request, { params }) {
     }
 
     const { id } = await params
+
+    // First, verify the campaign belongs to this organization
+    const campaign = await prisma.campaign.findFirst({
+      where: { id, organizationId: session.user.organizationId }
+    })
+
+    if (!campaign) {
+      return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })
+    }
+
+    // Unlink donations from this campaign (set campaignId to null)
+    await prisma.donation.updateMany({
+      where: { campaignId: id },
+      data: { campaignId: null }
+    })
+
+    // Now delete the campaign
     await prisma.campaign.delete({ where: { id } })
 
     return NextResponse.json({ success: true })
   } catch (error) {
+    console.error('Delete campaign error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

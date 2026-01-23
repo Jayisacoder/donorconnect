@@ -1,12 +1,15 @@
 "use client"
 
 import ProtectedGate from '@/components/protected-gate'
+import { DocsNav } from '@/components/docs-nav'
 import Link from 'next/link'
 
 export default function ReflectionPage() {
   return (
     <ProtectedGate>
-      <div className="mx-auto max-w-4xl space-y-10 py-12 px-6">
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-900 to-slate-950">
+        <DocsNav />
+        <div className="mx-auto max-w-4xl space-y-10 py-12 pt-24 px-6">
         <div>
           <h1 className="text-4xl font-bold text-white">Project Reflection</h1>
           <p className="mt-2 text-lg text-gray-300">
@@ -294,6 +297,7 @@ export default function ReflectionPage() {
             Go to Dashboard →
           </Link>
         </div>
+      </div>
       </div>
     </ProtectedGate>
   )

@@ -41,7 +41,7 @@ export function SegmentForm({ segment, onSubmit, onCancel }) {
   }
 
   return (
-    <Form {...form} onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+    <Form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
       <FormField
           control={form.control}
           name="name"

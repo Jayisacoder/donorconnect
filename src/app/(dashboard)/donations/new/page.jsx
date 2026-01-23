@@ -16,17 +16,26 @@ export default function NewDonationPage() {
   useEffect(() => {
     const loadData = async () => {
       setLoading(true)
+      setError('')
       try {
         const [donorsRes, campaignsRes] = await Promise.all([
           fetch('/api/donors?limit=100'),
           fetch('/api/campaigns?limit=100')
         ])
+        
+        if (!donorsRes.ok) {
+          throw new Error('Failed to load donors')
+        }
+        if (!campaignsRes.ok) {
+          throw new Error('Failed to load campaigns')
+        }
+        
         const donorsData = await donorsRes.json()
         const campaignsData = await campaignsRes.json()
         setDonors(donorsData.donors || [])
         setCampaigns(campaignsData.campaigns || [])
       } catch (err) {
-        setError('Unable to load data')
+        setError(err.message || 'Unable to load data')
       } finally {
         setLoading(false)
       }

@@ -47,7 +47,7 @@ export function WorkflowForm({ workflow, onSubmit, onCancel }) {
   }
 
   return (
-    <Form {...form} onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+    <Form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
       <FormField
           control={form.control}
           name="name"
@@ -84,7 +84,7 @@ export function WorkflowForm({ workflow, onSubmit, onCancel }) {
               <FormItem>
                 <FormLabel>Trigger</FormLabel>
                 <FormControl>
-                  <select {...field} className="w-full rounded border px-3 py-2">
+                  <select {...field} className="dark-select w-full">
                     {WorkflowTriggerEnum.options.map((opt) => (
                       <option key={opt} value={opt}>
                         {opt.replace(/_/g, ' ')}

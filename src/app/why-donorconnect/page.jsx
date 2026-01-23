@@ -1,41 +1,16 @@
+"use client"
+
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-
-export const metadata = { title: 'Why DonorConnect' }
+import { DocsNav } from '@/components/docs-nav'
 
 export default function WhyDonorConnectPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-900 to-slate-950">
-      {/* Public Header */}
-      <header className="bg-slate-900/50 border-b border-purple-500/20 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <Link href="/" className="hover:opacity-80 transition">
-                <h1 className="text-2xl font-bold text-purple-400">DonorConnect</h1>
-                <p className="text-sm text-gray-400">Making a difference together</p>
-              </Link>
-            </div>
-            <nav className="flex gap-4 items-center">
-              <Link href="/about">
-                <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-purple-500/20">About</Button>
-              </Link>
-              <Link href="/why-donorconnect">
-                <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-purple-500/20">Why DonorConnect</Button>
-              </Link>
-              <Link href="/donate">
-                <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-purple-500/20">Donate</Button>
-              </Link>
-              <Link href="/login">
-                <Button className="bg-slate-950 text-white border border-purple-500/50 hover:bg-purple-500/20">Staff Login</Button>
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <DocsNav />
 
       {/* Main Content */}
-      <main className="container mx-auto max-w-4xl px-4 py-12">
+      <main className="container mx-auto max-w-4xl px-4 py-12 pt-24">
         <div className="space-y-8">
           <div>
             <h1 className="text-4xl font-bold text-white mb-4">Why DonorConnect</h1>
@@ -93,10 +68,10 @@ export default function WhyDonorConnectPage() {
               </p>
             </div>
             <div>
-              <h4 className="font-bold mb-2 text-white">Contact</h4>
+              <h4 className="font-bold mb-2 text-white">Get Started</h4>
               <p className="text-sm">
-                Email: support@donorconnect.org<br />
-                Phone: (555) 123-4567
+                Ready to improve donor retention?<br />
+                Register your nonprofit today.
               </p>
             </div>
             <div>
