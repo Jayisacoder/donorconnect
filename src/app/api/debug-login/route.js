@@ -2,26 +2,28 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { verifyPassword } from '@/lib/password'
+import { createSession } from '@/lib/session'
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url)
   const email = searchParams.get('email') || 'admin@hopefoundation.org'
   const password = searchParams.get('password') || 'password123'
+  const testSession = searchParams.get('session') === 'true'
   
-  return handleDebug(email, password)
+  return handleDebug(email, password, testSession)
 }
 
 export async function POST(request) {
   try {
     const body = await request.json()
     const { email, password } = body
-    return handleDebug(email, password)
+    return handleDebug(email, password, false)
   } catch (error) {
     return NextResponse.json({ error: error.message })
   }
 }
 
-async function handleDebug(email, password) {
+async function handleDebug(email, password, testSession) {
   try {
     const result = {
       step: 'start',
@@ -29,6 +31,7 @@ async function handleDebug(email, password) {
       passwordProvided: !!password,
       userFound: false,
       passwordValid: false,
+      sessionCreated: false,
       error: null,
     }
 
@@ -51,6 +54,13 @@ async function handleDebug(email, password) {
     result.passwordValid = isValid
     result.userEmail = user.email
     result.userName = user.firstName
+
+    // Step 3: Test session creation if requested
+    if (testSession && isValid) {
+      const sessionToken = await createSession(user.id)
+      result.sessionCreated = !!sessionToken
+      result.sessionTokenLength = sessionToken?.length
+    }
 
     return NextResponse.json(result)
   } catch (error) {
