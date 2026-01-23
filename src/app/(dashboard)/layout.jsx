@@ -4,14 +4,21 @@ import { redirect } from 'next/navigation'
 import { getSession } from '@/lib/session'
 import { Sidebar } from '@/components/sidebar'
 
+// Prevent caching to ensure fresh session checks
+export const dynamic = 'force-dynamic'
 
 export default async function DashboardLayout({ children }) {
   const cookieStore = await cookies()
   const sessionToken = cookieStore.get('session')?.value
+  
+  if (!sessionToken) {
+    redirect('/login?reason=no-session')
+  }
+  
   const session = await getSession(sessionToken)
 
   if (!session) {
-    redirect('/login')
+    redirect('/login?reason=invalid-session')
   }
 
   return (

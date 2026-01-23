@@ -3,6 +3,9 @@ import { NextResponse } from 'next/server'
 import { login } from '@/lib/auth'
 import { createSession } from '@/lib/session'
 
+// Prevent caching of this route
+export const dynamic = 'force-dynamic'
+
 export async function POST(request) {
   try {
     const body = await request.json()
@@ -28,15 +31,24 @@ export async function POST(request) {
     }
 
     const sessionToken = await createSession(user.id)
+    
+    // Build cookie string manually for maximum compatibility
+    const isProduction = process.env.NODE_ENV === 'production'
+    const cookieValue = [
+      `session=${sessionToken}`,
+      'Path=/',
+      'HttpOnly',
+      `Max-Age=${60 * 60 * 24 * 7}`,
+      'SameSite=Lax',
+      isProduction ? 'Secure' : '',
+    ].filter(Boolean).join('; ')
 
-    const response = NextResponse.json({ user: { ...user, password: undefined } })
-    response.cookies.set('session', sessionToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+    const response = NextResponse.json({ 
+      success: true,
+      user: { ...user, password: undefined } 
     })
+    
+    response.headers.set('Set-Cookie', cookieValue)
 
     return response
   } catch (error) {
