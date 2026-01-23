@@ -14,7 +14,9 @@ import {
   LogOut,
   User,
   Zap,
-  Heart
+  Heart,
+  FileText,
+  MessageSquare
 } from 'lucide-react'
 
 const navigation = [
@@ -25,6 +27,11 @@ const navigation = [
   { name: 'Tasks', href: '/tasks', icon: CheckSquare },
   { name: 'Segments', href: '/segments', icon: FolderTree },
   { name: 'Workflows', href: '/workflows', icon: Workflow },
+]
+
+const documentationLinks = [
+  { name: 'Evidence', href: '/evidence', icon: FileText },
+  { name: 'Reflection', href: '/reflection', icon: MessageSquare },
 ]
 
 export function Sidebar({ user }) {
@@ -46,7 +53,7 @@ export function Sidebar({ user }) {
         </Link>
       </div>
       
-      <nav className="flex-1 space-y-1 px-3 py-6">
+      <nav className="flex-1 space-y-1 px-3 py-6 overflow-y-auto">
         {navigation.map((item) => {
           const isActive = pathname.startsWith(item.href)
           return (
@@ -73,6 +80,37 @@ export function Sidebar({ user }) {
             </Link>
           )
         })}
+        
+        {/* Documentation Section */}
+        <div className="pt-4 mt-4 border-t border-white/10">
+          <p className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Documentation</p>
+          {documentationLinks.map((item) => {
+            const isActive = pathname === item.href
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={cn(
+                  "group flex items-center rounded-xl px-4 py-3 text-sm font-medium transition-all duration-300",
+                  isActive 
+                    ? "bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-white shadow-lg border border-white/10" 
+                    : "text-gray-400 hover:bg-white/5 hover:text-white hover:translate-x-1"
+                )}
+              >
+                <item.icon 
+                  className={cn(
+                    "mr-3 h-5 w-5 flex-shrink-0 transition-all duration-300 group-hover:scale-110",
+                    isActive ? "text-purple-400" : "text-gray-500 group-hover:text-purple-400"
+                  )} 
+                />
+                {item.name}
+                {isActive && (
+                  <div className="ml-auto w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+                )}
+              </Link>
+            )
+          })}
+        </div>
       </nav>
 
       <div className="border-t border-white/10 p-4">
