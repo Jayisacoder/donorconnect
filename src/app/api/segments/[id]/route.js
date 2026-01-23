@@ -23,15 +23,38 @@ export async function GET(request, { params }) {
     try {
       await syncSegmentMembership(id, session.user.organizationId, segment.rules)
       
-      // Fetch updated segment
+      // Fetch updated segment with members (donors)
       const updated = await prisma.segment.findUnique({
-        where: { id }
+        where: { id },
+        include: {
+          members: {
+            include: {
+              donor: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  email: true,
+                  status: true,
+                  retentionRisk: true,
+                  totalGifts: true,
+                  totalAmount: true,
+                  lastGiftDate: true,
+                }
+              }
+            }
+          }
+        }
       })
+      
+      // Transform members to donors array for easier consumption
+      const donors = updated.members.map(m => m.donor)
       
       return NextResponse.json({ 
         segment: {
           ...updated,
-          lastCalculated: new Date()
+          lastCalculated: new Date(),
+          donors
         }
       })
     } catch (syncError) {

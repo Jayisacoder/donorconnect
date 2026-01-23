@@ -2,10 +2,13 @@
  * Public Donation Processing API
  * Handles donations from public-facing donation form
  * NO authentication required (public endpoint)
+ * Supports multi-org via organizationId parameter
  */
 
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { updateDonorMetrics } from '@/lib/api/donors'
+import { triggerWorkflows } from '@/lib/api/workflows'
 
 export async function POST(request) {
   try {
@@ -14,6 +17,7 @@ export async function POST(request) {
     console.log('Request body:', JSON.stringify(body, null, 2))
     
     const {
+      organizationId, // New: explicit organization ID for multi-org support
       firstName,
       lastName,
       email,
@@ -53,9 +57,23 @@ export async function POST(request) {
       )
     }
 
-    // Get the first organization (in real app, would be based on subdomain/config)
+    // Get organization - either by explicit ID or fallback to first
     console.log('Fetching organization...')
-    const organization = await prisma.organization.findFirst()
+    let organization
+    if (organizationId) {
+      organization = await prisma.organization.findUnique({
+        where: { id: organizationId }
+      })
+      if (!organization || !organization.isPublic) {
+        return NextResponse.json(
+          { error: 'Organization not found' },
+          { status: 404 }
+        )
+      }
+    } else {
+      // Fallback for legacy: use first organization
+      organization = await prisma.organization.findFirst()
+    }
     console.log('Organization:', organization?.id)
     
     if (!organization) {
@@ -66,26 +84,42 @@ export async function POST(request) {
       )
     }
 
+    // Verify campaign belongs to organization if provided
+    if (campaignId) {
+      const campaign = await prisma.campaign.findFirst({
+        where: { id: campaignId, organizationId: organization.id }
+      })
+      if (!campaign) {
+        return NextResponse.json(
+          { error: 'Campaign not found' },
+          { status: 404 }
+        )
+      }
+    }
+
     // Find or create donor
     console.log('Looking for existing donor:', email)
     let donor = await prisma.donor.findFirst({
       where: {
-        email,
+        email: email.toLowerCase().trim(),
         organizationId: organization.id,
       },
     })
+
+    const isNewDonor = !donor
 
     if (!donor) {
       // Create new donor
       console.log('Creating new donor...')
       donor = await prisma.donor.create({
         data: {
-          firstName,
-          lastName,
-          email,
-          phone: phone || null,
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          email: email.toLowerCase().trim(),
+          phone: phone?.trim() || null,
           organizationId: organization.id,
           status: 'ACTIVE',
+          retentionRisk: 'UNKNOWN',
           totalGifts: 0,
           totalAmount: 0,
         },
@@ -93,6 +127,16 @@ export async function POST(request) {
       console.log('New donor created:', donor.id)
     } else {
       console.log('Existing donor found:', donor.id)
+      // Update donor info
+      await prisma.donor.update({
+        where: { id: donor.id },
+        data: {
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          phone: phone?.trim() || donor.phone,
+          status: 'ACTIVE',
+        },
+      })
     }
 
     // Create donation record
@@ -140,6 +184,28 @@ export async function POST(request) {
           raised: campaignStats._sum.amount || 0,
         },
       })
+    }
+
+    // Trigger workflows for the donation
+    try {
+      const donationCount = await prisma.donation.count({ where: { donorId: donor.id } })
+      const isFirstDonation = donationCount === 1
+
+      await triggerWorkflows({
+        trigger: isFirstDonation ? 'FIRST_DONATION' : 'DONATION_RECEIVED',
+        organizationId: organization.id,
+        donorId: donor.id,
+        context: {
+          donationId: donation.id,
+          amount: donation.amount,
+          campaignId: donation.campaignId,
+          isNewDonor,
+          source: 'public_website',
+        },
+      })
+    } catch (workflowError) {
+      console.error('Workflow trigger error:', workflowError)
+      // Don't fail the donation if workflow fails
     }
 
     console.log('=== DONATION SUCCESS ===')

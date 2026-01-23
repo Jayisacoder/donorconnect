@@ -186,8 +186,10 @@ async function executeStep(params) {
 
     case 'wait':
       // In a real implementation, this would schedule the next step
-      // For now, we'll simulate immediate execution
-      console.log(`Wait step: ${step.duration} ${step.unit}`)
+      // For now, we'll simulate immediate execution with logging
+      const waitDays = step.days || 0
+      const waitHours = step.hours || 0
+      console.log(`Wait step: ${waitDays} days, ${waitHours} hours (simulated - executing immediately)`)
       break
 
     default:
@@ -215,14 +217,22 @@ async function executeEmailStep({ step, workflow, donor, context }) {
  * Execute a task creation step
  */
 async function executeTaskStep({ step, workflow, donor, organizationId, context }) {
+  // Map lowercase priority to database enum (uppercase)
+  const priorityMap = {
+    'low': 'LOW',
+    'normal': 'MEDIUM',
+    'high': 'HIGH',
+  }
+  const priority = priorityMap[step.priority] || step.priority?.toUpperCase() || 'MEDIUM'
+  
   const task = await prisma.task.create({
     data: {
       title: step.title || 'Workflow Task',
       description: step.description || `Created by workflow: ${workflow.name}`,
       donorId: donor?.id || null,
-      assignedTo: step.assignedTo || null,
+      assignedTo: step.assignTo || step.assignedTo || null,
       status: 'TODO',
-      priority: step.priority || 'MEDIUM',
+      priority,
       dueDate: step.dueDate ? new Date(step.dueDate) : null,
     },
   })

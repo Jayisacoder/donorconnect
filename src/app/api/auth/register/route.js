@@ -48,7 +48,27 @@ export async function POST(request) {
         return NextResponse.json({ error: 'Organization not found' }, { status: 400 })
       }
     } else {
-      const newOrg = await prisma.organization.create({ data: { name: organizationName } })
+      // Generate a URL-friendly slug from the organization name
+      const baseSlug = organizationName
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')
+      
+      // Ensure slug is unique by appending a number if needed
+      let slug = baseSlug
+      let slugCounter = 1
+      while (await prisma.organization.findUnique({ where: { slug } })) {
+        slug = `${baseSlug}-${slugCounter}`
+        slugCounter++
+      }
+      
+      const newOrg = await prisma.organization.create({ 
+        data: { 
+          name: organizationName,
+          slug,
+          isPublic: true
+        } 
+      })
       resolvedOrganizationId = newOrg.id
     }
 

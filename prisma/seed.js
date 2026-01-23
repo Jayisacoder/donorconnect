@@ -39,11 +39,23 @@ async function main() {
   // Create 2 Organizations
   console.log('🏢 Creating organizations...')
   const org1 = await prisma.organization.create({
-    data: { name: 'Hope Foundation' }
+    data: { 
+      name: 'Hope Foundation',
+      slug: 'hope-foundation',
+      description: 'Empowering communities through education and support programs.',
+      website: 'https://hopefoundation.org',
+      isPublic: true
+    }
   })
 
   const org2 = await prisma.organization.create({
-    data: { name: 'Community Care Network' }
+    data: { 
+      name: 'Community Care Network',
+      slug: 'community-care',
+      description: 'Providing essential services to families in need.',
+      website: 'https://communitycare.org',
+      isPublic: true
+    }
   })
 
   // Create 5 Users per organization

@@ -10,17 +10,29 @@ export const WorkflowTriggerEnum = z.enum([
 	'SCHEDULED',
 ])
 
+// Flexible step schema to support various step types
 const workflowStepSchema = z.object({
-	type: z.enum(['email', 'task', 'segment_add', 'segment_remove']),
+	type: z.enum(['email', 'task', 'wait']),
+	// Email step fields
+	subject: z.string().optional(),
+	body: z.string().optional(),
 	template: z.string().optional(),
+	// Task step fields
 	title: z.string().optional(),
-	delay: z.coerce.number().min(0).default(0),
+	description: z.string().optional(),
+	assignTo: z.string().optional(),
+	priority: z.enum(['low', 'normal', 'high', 'LOW', 'MEDIUM', 'HIGH', 'URGENT']).optional(),
+	// Wait step fields
+	days: z.coerce.number().min(0).optional(),
+	hours: z.coerce.number().min(0).max(23).optional(),
+	// Legacy/compatibility fields
+	delay: z.coerce.number().min(0).optional(),
 	metadata: z.record(z.any()).optional(),
-})
+}).passthrough() // Allow additional fields for flexibility
 
 export const createWorkflowSchema = z.object({
 	name: z.string().trim().min(1, 'Name is required').max(150),
-	description: z.string().trim().max(1000).optional().or(z.literal('').transform(() => undefined)),
+	description: z.string().trim().max(1000).optional().nullable().or(z.literal('').transform(() => null)),
 	segmentId: z.string().cuid().nullable().optional(),
 	trigger: WorkflowTriggerEnum,
 	steps: z.array(workflowStepSchema).min(1, 'At least one step is required'),

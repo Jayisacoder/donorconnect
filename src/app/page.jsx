@@ -1,48 +1,45 @@
 /**
- * Root Homepage - Public landing page
- * Displays real database stats
+ * Root Homepage - Platform landing page for DonorConnect
+ * Shows platform-wide stats and links to organization directory
  */
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card'
-import { Heart, Users, TrendingUp, Shield } from 'lucide-react'
+import { Heart, Users, TrendingUp, Shield, Building2, Sparkles, BarChart3, Zap } from 'lucide-react'
 import { prisma } from '@/lib/db'
 
 function formatCurrency(amount) {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   }).format(amount)
 }
 
 export default async function HomePage() {
-  // Fetch real data from database
+  // Fetch platform-wide stats
   let stats = {
+    totalOrganizations: 0,
     totalDonors: 0,
     totalRaised: 0,
     activeCampaigns: 0,
   }
 
   try {
-    const [donors, campaigns, donations] = await Promise.all([
-      prisma.donor.findMany({
-        select: { id: true },
-      }),
-      prisma.campaign.findMany({
-        where: { status: 'ACTIVE' },
-        select: { id: true },
-      }),
-      prisma.donation.findMany({
-        select: { amount: true },
-      }),
+    const [orgs, donors, campaigns, donations] = await Promise.all([
+      prisma.organization.count({ where: { isPublic: true } }),
+      prisma.donor.count(),
+      prisma.campaign.count({ where: { status: 'ACTIVE' } }),
+      prisma.donation.aggregate({ _sum: { amount: true } }),
     ])
 
-    stats.totalDonors = donors.length
-    stats.activeCampaigns = campaigns.length
-    stats.totalRaised = donations.reduce((sum, d) => sum + (d.amount || 0), 0)
+    stats.totalOrganizations = orgs
+    stats.totalDonors = donors
+    stats.activeCampaigns = campaigns
+    stats.totalRaised = donations._sum.amount || 0
   } catch (error) {
     console.error('Failed to fetch homepage stats:', error)
-    // Fallback to zeros if DB unavailable
   }
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-900 to-slate-950">
@@ -55,14 +52,14 @@ export default async function HomePage() {
               <p className="text-sm text-gray-400">Making a difference together</p>
             </div>
             <nav className="flex gap-4 items-center">
+              <Link href="/organizations">
+                <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-purple-500/20">Find Nonprofits</Button>
+              </Link>
               <Link href="/about">
                 <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-purple-500/20">About</Button>
               </Link>
               <Link href="/why-donorconnect">
                 <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-purple-500/20">Why DonorConnect</Button>
-              </Link>
-              <Link href="/donate">
-                <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-purple-500/20">Donate</Button>
               </Link>
               <Link href="/login">
                 <Button className="bg-slate-950 text-white border border-purple-500/50 hover:bg-purple-500/20">Staff Login</Button>
@@ -87,27 +84,33 @@ export default async function HomePage() {
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto font-semibold">
               <strong className="text-white">Solution:</strong> DonorConnect centralizes donor management, automates retention workflows, and uses AI to personalize outreach—helping nonprofits convert more first-time donors into lifelong supporters.
             </p>
-            <div className="flex gap-4 justify-center">
-              <Link href="/dashboard">
+            <div className="flex gap-4 justify-center flex-wrap">
+              <Link href="/organizations">
                 <Button size="lg" className="text-lg px-8 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white">
-                  Go to Dashboard
+                  <Heart className="h-5 w-5 mr-2" />
+                  Find a Nonprofit to Support
                 </Button>
               </Link>
-              <Link href="/donate">
+              <Link href="/register">
                 <Button size="lg" className="text-lg px-8 bg-slate-950 text-white border border-purple-500/50 hover:bg-purple-500/20">
-                  <Heart className="h-5 w-5 mr-2" />
-                  Donate Now
+                  <Building2 className="h-5 w-5 mr-2" />
+                  Register Your Nonprofit
                 </Button>
               </Link>
             </div>
           </div>
 
-          {/* Stats Section - Real Data from Database */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Stats Section - Platform-wide */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="glass-card p-6 text-center border border-purple-500/20 bg-purple-500/5">
+              <Building2 className="h-12 w-12 text-purple-400 mx-auto mb-3" />
+              <p className="text-3xl font-bold text-white mb-1">{stats.totalOrganizations}</p>
+              <p className="text-gray-400">Nonprofits</p>
+            </div>
             <div className="glass-card p-6 text-center border border-emerald-500/20 bg-emerald-500/5">
               <Users className="h-12 w-12 text-emerald-400 mx-auto mb-3" />
-              <p className="text-3xl font-bold text-white mb-1">{stats.totalDonors}</p>
-              <p className="text-gray-400">Active Donors</p>
+              <p className="text-3xl font-bold text-white mb-1">{stats.totalDonors.toLocaleString()}</p>
+              <p className="text-gray-400">Donors</p>
             </div>
             <div className="glass-card p-6 text-center border border-green-500/20 bg-green-500/5">
               <TrendingUp className="h-12 w-12 text-green-400 mx-auto mb-3" />
@@ -121,13 +124,41 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {/* Why Donate Section */}
+          {/* For Nonprofits Section */}
           <div>
-            <h3 className="text-3xl font-bold text-center mb-8 text-white">Why Your Donation Matters</h3>
+            <h3 className="text-3xl font-bold text-center mb-8 text-white">Why Nonprofits Choose DonorConnect</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="glass-card p-6 border border-purple-500/20">
+                <BarChart3 className="h-10 w-10 text-purple-400 mb-4" />
+                <h4 className="text-xl font-bold text-white mb-2">Centralized Donor Data</h4>
+                <p className="text-gray-300">
+                  Keep all your donor information, donation history, and interactions in one place.
+                </p>
+              </div>
+              <div className="glass-card p-6 border border-purple-500/20">
+                <Zap className="h-10 w-10 text-yellow-400 mb-4" />
+                <h4 className="text-xl font-bold text-white mb-2">Automated Workflows</h4>
+                <p className="text-gray-300">
+                  Set up automatic thank-you emails, follow-up reminders, and re-engagement campaigns.
+                </p>
+              </div>
+              <div className="glass-card p-6 border border-purple-500/20">
+                <Sparkles className="h-10 w-10 text-pink-400 mb-4" />
+                <h4 className="text-xl font-bold text-white mb-2">Increase Retention</h4>
+                <p className="text-gray-300">
+                  Convert more first-time donors into lifelong supporters with personalized outreach.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* For Donors Section */}
+          <div>
+            <h3 className="text-3xl font-bold text-center mb-8 text-white">Want to Make a Difference?</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="glass-card p-6 border border-purple-500/20">
                 <h4 className="text-xl font-bold text-white mb-2">Direct Impact</h4>
-                <p className="text-sm text-gray-400 mb-3">100% of your donation goes directly to our programs</p>
+                <p className="text-sm text-gray-400 mb-3">100% of your donation goes directly to programs</p>
                 <p className="text-gray-300">
                   Every dollar makes a meaningful difference in the lives of those we serve.
                 </p>
@@ -143,7 +174,7 @@ export default async function HomePage() {
                 <h4 className="text-xl font-bold text-white mb-2">Tax Deductible</h4>
                 <p className="text-sm text-gray-400 mb-3">All donations are fully tax-deductible</p>
                 <p className="text-gray-300">
-                  You'll receive an immediate receipt. We're a registered 501(c)(3) nonprofit.
+                  You'll receive an immediate receipt from registered 501(c)(3) nonprofits.
                 </p>
               </div>
               <div className="glass-card p-6 border border-purple-500/20">
@@ -153,7 +184,7 @@ export default async function HomePage() {
                 </h4>
                 <p className="text-sm text-gray-400 mb-3">Your information is protected</p>
                 <p className="text-gray-300">
-                  We use industry-standard encryption to protect your information.
+                  Industry-standard encryption protects all your information.
                 </p>
               </div>
             </div>
@@ -161,16 +192,23 @@ export default async function HomePage() {
 
           {/* CTA Section */}
           <div className="glass-card p-12 text-center border border-purple-500/30 bg-gradient-to-r from-purple-500/10 to-pink-500/10">
-            <h3 className="text-3xl font-bold mb-4 text-white">Ready to Make an Impact?</h3>
+            <h3 className="text-3xl font-bold mb-4 text-white">Ready to Get Started?</h3>
             <p className="text-lg text-gray-300 mb-6 max-w-xl mx-auto">
-              Join thousands of donors making a difference. Every contribution counts.
+              Whether you want to donate or register your nonprofit, DonorConnect makes it easy.
             </p>
-            <Link href="/donate">
-              <Button size="lg" className="text-lg px-8 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white">
-                <Heart className="h-5 w-5 mr-2" />
-                Start Giving Today
-              </Button>
-            </Link>
+            <div className="flex gap-4 justify-center flex-wrap">
+              <Link href="/organizations">
+                <Button size="lg" className="text-lg px-8 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white">
+                  <Heart className="h-5 w-5 mr-2" />
+                  Find a Nonprofit
+                </Button>
+              </Link>
+              <Link href="/register">
+                <Button size="lg" variant="outline" className="text-lg px-8 border-purple-500/50 text-purple-400 hover:bg-purple-500/20">
+                  Register Your Nonprofit
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </main>
@@ -178,7 +216,7 @@ export default async function HomePage() {
       {/* Footer */}
       <footer className="bg-slate-950 border-t border-purple-500/20 text-gray-400 mt-16">
         <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <h4 className="font-bold mb-2 text-white">About</h4>
               <p className="text-sm">
@@ -186,16 +224,24 @@ export default async function HomePage() {
               </p>
             </div>
             <div>
+              <h4 className="font-bold mb-2 text-white">For Donors</h4>
+              <ul className="text-sm space-y-1">
+                <li><Link href="/organizations" className="hover:text-purple-400">Find Nonprofits</Link></li>
+                <li><Link href="/about" className="hover:text-purple-400">About Us</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-bold mb-2 text-white">For Nonprofits</h4>
+              <ul className="text-sm space-y-1">
+                <li><Link href="/register" className="hover:text-purple-400">Get Started</Link></li>
+                <li><Link href="/login" className="hover:text-purple-400">Staff Login</Link></li>
+              </ul>
+            </div>
+            <div>
               <h4 className="font-bold mb-2 text-white">Contact</h4>
               <p className="text-sm">
                 Email: support@donorconnect.org<br />
                 Phone: (555) 123-4567
-              </p>
-            </div>
-            <div>
-              <h4 className="font-bold mb-2 text-white">Secure Giving</h4>
-              <p className="text-sm">
-                All donations are processed securely with industry-standard encryption.
               </p>
             </div>
           </div>

@@ -85,10 +85,15 @@ enum InteractionType {
 // ============================================================================
 
 model Organization {
-  id        String   @id @default(cuid())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique  // URL-friendly identifier for public pages
+  description String?           // Public description for the org
+  website     String?           // Organization's website
+  logo        String?           // Logo URL
+  isPublic    Boolean  @default(true) // Whether org appears in public directory
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Relations
   users     User[]

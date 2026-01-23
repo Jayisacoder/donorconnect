@@ -8,22 +8,20 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Plus, X, Mail, Clock, CheckSquare, ArrowRight, Send, Bell } from 'lucide-react'
+import { Plus, X, Mail, Clock, CheckSquare, ArrowRight } from 'lucide-react'
 
 const TRIGGER_OPTIONS = [
   { value: 'FIRST_DONATION', label: 'First Donation', description: 'When a donor gives for the first time' },
   { value: 'DONATION_RECEIVED', label: 'Any Donation', description: 'Every time a donation is received' },
-  { value: 'LAPSED_DONOR', label: 'Donor Becomes Lapsed', description: 'When a donor hasn\'t given in a while' },
-  { value: 'BIRTHDAY', label: 'Birthday', description: 'On the donor\'s birthday' },
-  { value: 'ANNIVERSARY', label: 'Giving Anniversary', description: 'Anniversary of first donation' },
+  { value: 'INACTIVITY_THRESHOLD', label: 'Donor Inactivity', description: 'When a donor hasn\'t given in a while' },
+  { value: 'SEGMENT_ENTRY', label: 'Segment Entry', description: 'When a donor enters a segment' },
   { value: 'MANUAL', label: 'Manual Trigger', description: 'Start workflow manually' },
+  { value: 'SCHEDULED', label: 'Scheduled', description: 'Run on a schedule' },
 ]
 
 const STEP_TYPES = [
   { value: 'email', label: 'Send Email', icon: Mail, description: 'Send an automated email' },
-  { value: 'sms', label: 'Send SMS', icon: Send, description: 'Send a text message' },
   { value: 'task', label: 'Create Task', icon: CheckSquare, description: 'Assign a follow-up task to staff' },
-  { value: 'notification', label: 'Send Notification', icon: Bell, description: 'In-app notification' },
   { value: 'wait', label: 'Wait', icon: Clock, description: 'Pause for a period of time' },
 ]
 
@@ -71,10 +69,8 @@ export function WorkflowBuilderForm({ workflow, onSubmit, submitting }) {
     const newStep = {
       id: generateUniqueId(),
       type,
-      ...(type === 'email' && { subject: '', body: '', template: '', variables: [] }),
-      ...(type === 'sms' && { message: '', variables: [] }),
+      ...(type === 'email' && { subject: '', body: '', template: '' }),
       ...(type === 'task' && { title: '', description: '', assignTo: '', priority: 'normal' }),
-      ...(type === 'notification' && { title: '', message: '', type: 'info' }),
       ...(type === 'wait' && { days: 1, hours: 0 }),
     }
     setSteps([...steps, newStep])
@@ -324,47 +320,6 @@ export function WorkflowBuilderForm({ workflow, onSubmit, submitting }) {
                           <option value="low">Low Priority</option>
                           <option value="normal">Normal Priority</option>
                           <option value="high">High Priority</option>
-                        </select>
-                      </div>
-                    )}
-
-                    {step.type === 'sms' && (
-                      <div className="space-y-2">
-                        <Textarea
-                          placeholder="SMS message (160 characters per message)"
-                          value={step.message || ''}
-                          onChange={(e) => updateStep(step.id, { message: e.target.value.slice(0, 160) })}
-                          rows={2}
-                          className="bg-slate-800 border-purple-500/30 text-white placeholder:text-gray-500"
-                        />
-                        <p className="text-xs text-gray-400">{(step.message || '').length}/160 characters</p>
-                      </div>
-                    )}
-
-                    {step.type === 'notification' && (
-                      <div className="space-y-2">
-                        <Input
-                          placeholder="Notification title"
-                          value={step.title || ''}
-                          onChange={(e) => updateStep(step.id, { title: e.target.value })}
-                          className="bg-slate-800 border-purple-500/30 text-white placeholder:text-gray-500"
-                        />
-                        <Textarea
-                          placeholder="Notification message"
-                          value={step.message || ''}
-                          onChange={(e) => updateStep(step.id, { message: e.target.value })}
-                          rows={2}
-                          className="bg-slate-800 border-purple-500/30 text-white placeholder:text-gray-500"
-                        />
-                        <select
-                          value={step.notificationType || 'info'}
-                          onChange={(e) => updateStep(step.id, { notificationType: e.target.value })}
-                          className="w-full rounded-lg border-2 border-purple-500/30 px-3 py-2 bg-slate-800 text-white cursor-pointer text-sm"
-                        >
-                          <option value="info">Information</option>
-                          <option value="success">Success</option>
-                          <option value="warning">Warning</option>
-                          <option value="error">Error</option>
                         </select>
                       </div>
                     )}

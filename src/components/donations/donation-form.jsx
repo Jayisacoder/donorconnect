@@ -11,7 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Textarea } from '@/components/ui/textarea'
 import { createDonationSchema } from '@/lib/validation/donation-schema'
 
-export function DonationForm({ donation, donors, onSubmit, onCancel }) {
+export function DonationForm({ donation, donors, campaigns = [], onSubmit, onCancel }) {
   const form = useForm({
     resolver: zodResolver(createDonationSchema.partial({ donorId: false, amount: false, date: false })),
     defaultValues: {
@@ -137,7 +137,17 @@ export function DonationForm({ donation, donors, onSubmit, onCancel }) {
             <FormItem>
               <FormLabel>Campaign (optional)</FormLabel>
               <FormControl>
-                <Input placeholder="Campaign ID" {...field} />
+                <select 
+                  {...field} 
+                  className="w-full rounded border border-gray-700 bg-gray-900 px-3 py-2 text-white"
+                >
+                  <option value="">— No campaign —</option>
+                  {campaigns.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
               </FormControl>
               <FormMessage />
             </FormItem>

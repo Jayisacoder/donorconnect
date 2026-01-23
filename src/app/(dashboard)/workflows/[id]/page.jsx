@@ -199,7 +199,11 @@ export default function WorkflowDetailPage({ params }) {
                         
                         {step.type === 'wait' && (
                           <p className="text-sm text-gray-300">
-                            Wait for <span className="font-medium text-white">{step.days} day{step.days !== 1 ? 's' : ''}</span>
+                            Wait for{' '}
+                            {step.days > 0 && <span className="font-medium text-white">{step.days} day{step.days !== 1 ? 's' : ''}</span>}
+                            {step.days > 0 && step.hours > 0 && ' and '}
+                            {step.hours > 0 && <span className="font-medium text-white">{step.hours} hour{step.hours !== 1 ? 's' : ''}</span>}
+                            {!step.days && !step.hours && <span className="font-medium text-white">0 days</span>}
                           </p>
                         )}
                       </div>

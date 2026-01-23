@@ -9,24 +9,30 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 export default function NewDonationPage() {
   const router = useRouter()
   const [donors, setDonors] = useState([])
-  const [loadingDonors, setLoadingDonors] = useState(true)
+  const [campaigns, setCampaigns] = useState([])
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
   useEffect(() => {
-    const loadDonors = async () => {
-      setLoadingDonors(true)
+    const loadData = async () => {
+      setLoading(true)
       try {
-        const res = await fetch('/api/donors?limit=100')
-        const data = await res.json()
-        setDonors(data.donors || [])
+        const [donorsRes, campaignsRes] = await Promise.all([
+          fetch('/api/donors?limit=100'),
+          fetch('/api/campaigns?limit=100')
+        ])
+        const donorsData = await donorsRes.json()
+        const campaignsData = await campaignsRes.json()
+        setDonors(donorsData.donors || [])
+        setCampaigns(campaignsData.campaigns || [])
       } catch (err) {
-        setError('Unable to load donors')
+        setError('Unable to load data')
       } finally {
-        setLoadingDonors(false)
+        setLoading(false)
       }
     }
 
-    loadDonors()
+    loadData()
   }, [])
 
   const handleCreate = async (data) => {
@@ -60,10 +66,15 @@ export default function NewDonationPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           {error && <div className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>}
-          {loadingDonors ? (
-            <div>Loading donors...</div>
+          {loading ? (
+            <div>Loading...</div>
           ) : (
-            <DonationForm donors={donors} onSubmit={handleCreate} onCancel={() => router.back()} />
+            <DonationForm 
+              donors={donors} 
+              campaigns={campaigns}
+              onSubmit={handleCreate} 
+              onCancel={() => router.back()} 
+            />
           )}
         </CardContent>
       </Card>

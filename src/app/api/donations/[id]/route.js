@@ -11,8 +11,9 @@ export async function GET(request, { params }) {
     const session = await getSession(sessionToken)
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+    const { id } = await params
     const donation = await prisma.donation.findFirst({
-      where: { id: params.id, donor: { organizationId: session.user.organizationId } },
+      where: { id, donor: { organizationId: session.user.organizationId } },
       include: { donor: true, campaign: true },
     })
 
@@ -34,11 +35,12 @@ export async function PATCH(request, { params }) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
+    const { id } = await params
     const body = await request.json()
     const data = updateDonationSchema.parse(body)
 
     const donation = await prisma.donation.update({
-      where: { id: params.id },
+      where: { id },
       data,
     })
 
@@ -60,7 +62,8 @@ export async function DELETE(request, { params }) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    const donation = await prisma.donation.delete({ where: { id: params.id } })
+    const { id } = await params
+    const donation = await prisma.donation.delete({ where: { id } })
     await updateDonorMetrics(donation.donorId)
 
     return NextResponse.json({ success: true })
