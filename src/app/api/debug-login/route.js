@@ -3,11 +3,26 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { verifyPassword } from '@/lib/password'
 
+export async function GET(request) {
+  const { searchParams } = new URL(request.url)
+  const email = searchParams.get('email') || 'admin@hopefoundation.org'
+  const password = searchParams.get('password') || 'password123'
+  
+  return handleDebug(email, password)
+}
+
 export async function POST(request) {
   try {
     const body = await request.json()
     const { email, password } = body
+    return handleDebug(email, password)
+  } catch (error) {
+    return NextResponse.json({ error: error.message })
+  }
+}
 
+async function handleDebug(email, password) {
+  try {
     const result = {
       step: 'start',
       emailProvided: !!email,
