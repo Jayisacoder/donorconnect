@@ -43,8 +43,8 @@ function LoginForm() {
         return
       }
 
-      router.push(redirectTo)
-      router.refresh()
+      // Use hard redirect to ensure cookies are sent with the new request
+      window.location.href = redirectTo
     } catch (err) {
       setError('Something went wrong. Please try again.')
     } finally {
