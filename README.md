@@ -328,6 +328,56 @@ NEXT_PUBLIC_APP_URL="http://localhost:3000"
 
 ---
 
+## 📝 User Feedback & Change Mapping
+
+### Feedback Collection
+
+User feedback was collected via a Google Form survey from testers evaluating the DonorConnect platform.
+
+**📋 Feedback Form**: [Google Forms Survey](https://docs.google.com/forms/d/e/1FAIpQLSdKfh2lIjZUgcthW_eSJoiIqUW85OJikZjQe2_F9ZAaE2j42g/viewform?usp=header)
+
+*Survey collected responses on: ease of navigation, pain points, platform comparison to other tools, feature requests, and general feedback.*
+
+---
+
+### Feedback Change Mapping Table
+
+| Feedback ID | User Feedback | Problem Identified | Decision Made | Change Implemented |
+|-------------|---------------|-------------------|---------------|-------------------|
+| **FB-01** | "Campaign ID says it's optional but it seems it is required" | Users confused by form field labeling when campaign is conditionally required | Clarify optional field behavior in UI | Updated donation form to show "(optional)" label clearly; improved campaign dropdown placeholder text |
+| **FB-02** | "Making the text visible in the drop down boxes" | Dropdown text contrast insufficient; hard to read selections | Improve form element visibility | Increased text contrast in Select components; darkened dropdown option text from gray-400 to gray-100 |
+| **FB-03** | "A way to edit names once you type the donor in" | Users could not edit donor names after initial entry | Enable inline editing for donor records | Added edit functionality to donor profile page; implemented PUT endpoint for donor updates |
+| **FB-04** | "The filters and the edit campaigns - I could not act on them" | Campaign edit and filter functionality unclear or broken | Fix campaign management interactions | Repaired campaign edit modal; added clear filter reset button; improved filter state persistence |
+| **FB-05** | "The ability to get a synopsis on everything" | Users wanted quick overview of donor information | Provide summarized donor insights | Implemented AI-powered donor summary feature with GPT-4o-mini; added "AI Summary" button on donor profiles |
+| **FB-06** | "Demo credentials feature is currently [unclear]" | Test login credentials not prominently displayed | Make demo access easier | Added demo credentials banner on login page showing `admin@hopefoundation.org` / `password123` |
+| **FB-07** | "When logging a donation, the dropdown [issue]" | Donation form dropdown had usability issues | Improve donation logging experience | Fixed donor selection dropdown; added search/filter within dropdown; improved loading states |
+
+---
+
+### Before & After Examples
+
+#### FB-02: Dropdown Visibility
+- **Before**: Dropdown text used `text-gray-400`, making selections hard to read on dark background
+- **After**: Updated to `text-gray-100` with proper contrast ratio for accessibility
+
+#### FB-05: Donor Synopsis
+- **Before**: Staff had to manually read through donation history and notes to understand donor status
+- **After**: One-click "AI Summary" generates 80-100 word actionable insight with retention risk and next steps
+
+#### FB-06: Demo Credentials
+- **Before**: Users had to find login info in README or documentation
+- **After**: Login page displays credentials directly with copy-to-clipboard functionality
+
+---
+
+### Summary
+
+> **Feedback creates decisions. Decisions create changes. Changes must be visible.**
+
+All changes in DonorConnect can be traced back to specific user feedback collected during testing. This iterative approach ensures the platform addresses real user needs rather than assumed requirements.
+
+---
+
 ## 🎓 Key Learning Outcomes
 
 Building DonorConnect demonstrates:
